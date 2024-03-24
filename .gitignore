@@ -1,16 +1,25 @@
+
+
+### Java ###
 # Compiled class file
 *.class
 
-# Log file
-*.log
 
-# BlueJ files
-*.ctxt
+### Node ###
+node_modules
+dist/
+.node/
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+### Gradle ###
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
 
-# Package Files #
+
+### Package Files ###
 *.jar
 *.war
 *.nar
@@ -19,6 +28,62 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
+# This jar have to go to version control
+!libs/*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# production data, do not go to version
+holter-ci-2.env
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### fleet IDE ###
+.fleet/
+
+### Eclipse ###
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+*.Rhistory
+
+
+### MAC OS ###
+.DS_Store
