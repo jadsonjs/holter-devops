@@ -1,1 +1,1 @@
-rootProject.name = "holter-ci"
+rootProject.name = "holter-devops"

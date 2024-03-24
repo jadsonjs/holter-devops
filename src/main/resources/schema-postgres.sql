@@ -1,6 +1,6 @@
 
 
-CREATE ROLE "holter-ci" WITH
+CREATE ROLE "holter-devops" WITH
   LOGIN
   NOSUPERUSER
   INHERIT
@@ -9,16 +9,16 @@ CREATE ROLE "holter-ci" WITH
   NOREPLICATION
   ENCRYPTED PASSWORD 'md5ca1d66c4b07a7baf45c799a4f47bfee3';
 
-CREATE DATABASE "holter-ci"
+CREATE DATABASE "holter-devops"
     WITH
-    OWNER = "holter-ci"
+    OWNER = "holter-devops"
     ENCODING = 'UTF8'
     LC_COLLATE = 'en_US.utf8'
     LC_CTYPE = 'en_US.utf8'
     TABLESPACE = pg_default
     CONNECTION LIMIT = -1;
 
-CREATE SCHEMA holter_ci AUTHORIZATION "holter-ci";
+CREATE SCHEMA holter_ci AUTHORIZATION "holter-devops";
 
 
 
@@ -34,7 +34,7 @@ CREATE SEQUENCE holter_ci.metric_reference_values_id_seq
     MAXVALUE 9223372036854775807
     CACHE 1;
 
-ALTER SEQUENCE holter_ci.metric_reference_values_id_seq OWNER TO "holter-ci";
+ALTER SEQUENCE holter_ci.metric_reference_values_id_seq OWNER TO "holter-devops";
 
 
 
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS holter_ci.metric_reference_values
 
 TABLESPACE pg_default;
 
-ALTER TABLE holter_ci.metric_reference_values OWNER to "holter-ci";
+ALTER TABLE holter_ci.metric_reference_values OWNER to "holter-devops";
 
 
 
@@ -62,7 +62,7 @@ CREATE SEQUENCE holter_ci.control_metric_id_seq
     CACHE 1;
 
 ALTER SEQUENCE holter_ci.control_metric_id_seq
-    OWNER TO "holter-ci";
+    OWNER TO "holter-devops";
 
 
 
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS holter_ci.control_metric
 
 TABLESPACE pg_default;
 
-ALTER TABLE holter_ci.control_metric OWNER to "holter-ci";
+ALTER TABLE holter_ci.control_metric OWNER to "holter-devops";
 
 
 
@@ -97,7 +97,7 @@ CREATE SEQUENCE holter_ci.metric_history_id_seq
     MAXVALUE 9223372036854775807
     CACHE 1;
 
-ALTER SEQUENCE holter_ci.metric_history_id_seq OWNER TO "holter-ci";
+ALTER SEQUENCE holter_ci.metric_history_id_seq OWNER TO "holter-devops";
 
 
 CREATE TABLE IF NOT EXISTS holter_ci.metric_history
@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS holter_ci.metric_history
 
 TABLESPACE pg_default;
 
-ALTER TABLE holter_ci.metric_history OWNER to "holter-ci";
+ALTER TABLE holter_ci.metric_history OWNER to "holter-devops";
 
 
 
@@ -131,7 +131,7 @@ CREATE SEQUENCE holter_ci.period_id_seq
     MAXVALUE 9223372036854775807
     CACHE 1;
 
-ALTER SEQUENCE holter_ci.period_id_seq OWNER TO "holter-ci";
+ALTER SEQUENCE holter_ci.period_id_seq OWNER TO "holter-devops";
 
 
 CREATE TABLE IF NOT EXISTS holter_ci.period
@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS holter_ci.period
 
 TABLESPACE pg_default;
 
-ALTER TABLE holter_ci.period OWNER to "holter-ci";
+ALTER TABLE holter_ci.period OWNER to "holter-devops";
 
 
 
@@ -163,7 +163,7 @@ CREATE SEQUENCE holter_ci.project_id_seq
     MAXVALUE 9223372036854775807
     CACHE 1;
 
-ALTER SEQUENCE holter_ci.project_id_seq OWNER TO "holter-ci";
+ALTER SEQUENCE holter_ci.project_id_seq OWNER TO "holter-devops";
 
 
 CREATE TABLE IF NOT EXISTS holter_ci.project
@@ -177,7 +177,7 @@ CREATE TABLE IF NOT EXISTS holter_ci.project
 
 TABLESPACE pg_default;
 
-ALTER TABLE holter_ci.project OWNER to "holter-ci";
+ALTER TABLE holter_ci.project OWNER to "holter-devops";
 
 
 
@@ -194,7 +194,7 @@ CREATE SEQUENCE holter_ci.project_configuration_id_seq
     MAXVALUE 9223372036854775807
     CACHE 1;
 
-ALTER SEQUENCE holter_ci.project_configuration_id_seq OWNER TO "holter-ci";
+ALTER SEQUENCE holter_ci.project_configuration_id_seq OWNER TO "holter-devops";
 
 
 CREATE TABLE IF NOT EXISTS holter_ci.project_configuration
@@ -218,7 +218,7 @@ CREATE TABLE IF NOT EXISTS holter_ci.project_configuration
 
 TABLESPACE pg_default;
 
-ALTER TABLE holter_ci.project_configuration OWNER to "holter-ci";
+ALTER TABLE holter_ci.project_configuration OWNER to "holter-devops";
 
 
 
@@ -233,7 +233,7 @@ CREATE SEQUENCE holter_ci.scheduler_id_seq
     MAXVALUE 9223372036854775807
     CACHE 1;
 
-ALTER SEQUENCE holter_ci.scheduler_id_seq OWNER TO "holter-ci";
+ALTER SEQUENCE holter_ci.scheduler_id_seq OWNER TO "holter-devops";
 
 
 
@@ -254,7 +254,7 @@ CREATE TABLE IF NOT EXISTS holter_ci.scheduler
 
 TABLESPACE pg_default;
 
-ALTER TABLE holter_ci.scheduler OWNER to "holter-ci";
+ALTER TABLE holter_ci.scheduler OWNER to "holter-devops";
 
 
 
@@ -273,7 +273,7 @@ CREATE TABLE IF NOT EXISTS holter_ci.scheduler_collectors
 
 TABLESPACE pg_default;
 
-ALTER TABLE holter_ci.scheduler_collectors OWNER to "holter-ci";
+ALTER TABLE holter_ci.scheduler_collectors OWNER to "holter-devops";
 
 
 
