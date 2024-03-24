@@ -9,7 +9,7 @@ Therefore, there are no guarantees about its perfect functioning; the methodolog
 ![dashboard](https://github.com/jadsonjs/holter-devops/blob/master/dashboard.png)
 
 
-## Tool Settings:
+## Settings:
 Edit the file <b>src/frontend/.evn.prod</b>, it's necessary to put the production backend API address, as shown in the example below:
 
          VUE_APP_BACKEND_BASE_URL = https://xxxxxx.xxx.xxx.xxx/holter/api
@@ -70,7 +70,7 @@ Also, change the property with the application address.
         app.url = http://localhost:8080/holter/
 
 
-## Tool Build
+## Build
 To build the tool just type the docker command below inside the main directory of the tool, where the Dockerfile is located:
 
           docker build . -t <institution>/holter-devops:vX
@@ -81,7 +81,7 @@ Where:
 
 
 
-## Tool Execution
+## Running
 To run the tool type the command below (in a single line):
 
        docker container run -d -p 8200:8080 --env DATABASE_PATH=/data --env DATABASE_PASSWORD=sa123456 --env MAIL_ACCOUNT=xxxx@ufrn.br --env MAIL_PASSWORD='xxxx xxxx xxxx xxxx' --env TOKEN_SECRET=aaaaaaaa00000 -v /data/holter:/data --name holter-devops <institution>/holter-devops:vX
