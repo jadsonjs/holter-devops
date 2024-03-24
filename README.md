@@ -118,10 +118,7 @@ There must be a clear definition of what would constitute an issue related to an
 Justification:
 
 *In GitLab, the failure rate is measured as the percentage of deploys that cause an incident in production in a given period. GitLab calculates this by the number of incidents divided by the number of deploys in a production environment.*
-This assumes:
-    - GitLab incidents are tracked.
-    - All incidents are related to a production environment.
-    - Incidents and deploys have a strictly individual relationship. An incident is related to only one deploy in production, and any deploy in production is related to at most one incident.
+*This assumes:  1) GitLab incidents are tracked. 2) All incidents are related to a production environment. 3) Incidents and deploys have a strictly individual relationship. An incident is related to only one deploy in production, and any deploy in production is related to at most one incident.*
 *To simplify, we will calculate the number of incidents in production as "error issues" opened for a project. Because we do not know if the entire team uses this concept of "incidents" and "production environment" existing in GitLab. Besides, it does not encompass other repositories with GitHub where these concepts do not exist.*
 
 ### 2 - Calculation of metrics involving deployment frequency
@@ -137,3 +134,8 @@ Justification:
 To calculate the CycleTime metric involving the time between the first commit and the completion of a task, there must be a relationship between commits and issues in GitLab. The tool uses commit comments to make this relationship, so for the correct calculation of this metric, commit comments must contain the issue number in the format #NNN - xxxxxxxx. Where NNN is the issue number. Example of commit comment:
 
             #98 - Unit test issue
+            
+            
+ ## Author
+
+Jadson Santos  -  jadson.santos@ufrn.br           
