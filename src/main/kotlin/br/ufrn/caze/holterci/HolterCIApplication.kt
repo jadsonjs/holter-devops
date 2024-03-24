@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  *
  *
- * holter-ci
+ * holter-devops
  * br.ufrn.caze.holterci
  * HolterCIApplication
  * 28/03/21

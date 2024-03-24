@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  *
  *
- * holter-ci
+ * holter-devops
  * br.ufrn.caze.holterci.domain.services.crud
  * UserService
  * 18/11/23

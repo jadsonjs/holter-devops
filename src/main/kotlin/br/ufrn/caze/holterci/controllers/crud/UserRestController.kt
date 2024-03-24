@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  *
  *
- * holter-ci
+ * holter-devops
  * br.ufrn.caze.holterci.controllers.crud
  * UserController
  * 18/11/23

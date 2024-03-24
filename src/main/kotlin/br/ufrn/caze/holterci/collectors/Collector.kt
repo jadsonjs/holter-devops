@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  *
  *
- * holter-ci
+ * holter-devops
  * br.ufrn.caze.publicano
  * Collector
  * 21/05/21

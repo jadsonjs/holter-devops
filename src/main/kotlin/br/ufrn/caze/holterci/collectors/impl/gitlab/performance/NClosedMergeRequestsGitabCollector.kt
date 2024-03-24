@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  *
  *
- * holter-ci
+ * holter-devops
  * br.ufrn.caze.publicano.domain.collectors.github
  * NClosedMergeRequestsGitabCollector
  * 20/07/21
