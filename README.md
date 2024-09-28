@@ -101,7 +101,11 @@ To perform the first login to the tool you need to register 1 initial user via S
 
         https://server.ufrn.br:8200/holter/h2-console/
 
-In the "Password" field enter the database password defined in the docker run command (--env DATABASE_PASSWORD=sa123456) and in the JDBC URL field enter the name of the database file (holter_db) also defined in the docker run command by the parameter (--env DATABASE_PATH=/data). Now insert the initial ADMIN user with the SQL commands below:
+In the "Password" field, we enter the database password defined in the docker run command (--env DATABASE_PASSWORD=sa123456) 
+
+In the JDBC URL field, enter the database name (holter_db) along with the path defined in the Docker run command using the parameter --env DATABASE_PATH=/data. For this example, the JDBC URL will be jdbc:h2:/data/holter_db. 
+
+Now insert the initial ADMIN user with the SQL commands below:
 
         INSERT INTO HOLTER.USER_ (email, password) VALUES ('xxxxx.xxxx@ufrn.br', 'xxxxxx'); INSERT INTO HOLTER.PERMISSION (role, user_id) VALUES ('ADMIN', (SELECT id FROM HOLTER.USER_ WHERE email = 'xxxxx.xxxx@ufrn.br'));
 
