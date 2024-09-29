@@ -107,9 +107,9 @@ In the JDBC URL field, enter the database name (holter_db) along with the path d
 
 Now insert the initial ADMIN user with the SQL commands below:
 
-        INSERT INTO HOLTER.USER_ (email, password) VALUES ('xxxxx.xxxx@ufrn.br', 'xxxxxx'); INSERT INTO HOLTER.PERMISSION (role, user_id) VALUES ('ADMIN', (SELECT id FROM HOLTER.USER_ WHERE email = 'xxxxx.xxxx@ufrn.br'));
+        INSERT INTO HOLTER.USER_ (email, password) VALUES ('xxxxx.xxxx@ufrn.br', BCryptPasswordEncoder('plain text password')); INSERT INTO HOLTER.PERMISSION (role, user_id) VALUES ('ADMIN', (SELECT id FROM HOLTER.USER_ WHERE email = 'xxxxx.xxxx@ufrn.br'));
 
-
+**PS.: The password field is a ```BCryptPasswordEncoder('plain text password')``` that can be generated here:  https://bcrypt-generator.com**
 
 ## Considerations on Metrics Collection
 

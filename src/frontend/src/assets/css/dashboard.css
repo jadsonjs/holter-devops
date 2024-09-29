@@ -15,7 +15,7 @@
 
 /* default box to show the metrics value */
 .metric_box {
-  width: 400px;
+  width: 350px;
   height: 100px;
   text-align: center;
   display: table-cell;
