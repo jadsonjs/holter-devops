@@ -106,7 +106,11 @@
             )
             .catch(
                 error => {
-                    this.$toastw.error(error.data.messageList)
+                    if(error.data)
+                        this.$toastw.error(error.data.messageList)
+                    else
+                        this.$toastw.error(error)
+                    console.log(error)
                 }
             )
         },
