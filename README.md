@@ -9,6 +9,58 @@ Therefore, there are no guarantees about its perfect functioning; the methodolog
 ![dashboard](https://github.com/jadsonjs/holter-devops/blob/master/dashboard.png)
 
 
+## Supported DevOps practices
+
+
+### BASIC
+
+   - **NUMBER OF CHANGES DELIVERED**: Number of changes develiry in the period of analysis (Pull Requests or Merge Requests). ``` COUNT ( merge_requests OR pull_requests ) ```
+
+   - **CYCLE TIME**: Mean time from first commit (in the period of analysis) to issue closed.  ``` MEAN ( issue.closed_at - fisrt_commit.created_at ) ```
+ 
+   - **LEAD TIME**:Mean time from when the issue (in the period of analysis) was created to when it was closed".  ``` MEAN ( issue.closed_at - issue.created_at ) ```
+
+   - **NUMBER OF CLOSED ISSUES**: Number of ISSUES closed in the period of analysis. ``` COUNT closed_issues  ```
+
+   - **NUMBER OF BUGS**: Number of Bug-related Issues closed ( in the period of analysis ). ``` COUNT bug_closed_issues ```
+
+   - **BUGS RATE**: Number of Bug-related Issues closed divided by the total of ISSUES closed (in the period of analysis). ```( COUNT bug_closed_issues ) / ( COUNT closed_issues ) ```
+
+### CI
+
+   - **BUILD DURATION**: It is a measure used to describe the time spend to execute a build. To practice good CI, the builds should run fast to have fast feedbacks. ``` MEAN ( build.finished_at - build.started_at ) ```
+
+   - **BUILD ACTIVITY**: It is a measure used to describe the percente of **working days** with builds. To practice good CI, the project should make constant builds. ``` COUNT days_with_builds  / COUNT days ```
+
+   - **BUILD HEALTH**: It measure the percentage of successful builds out of total project builds. To practice good CI, builds should fail less. ``` ( COUNT builds - COUNT broken_builds  ) /  COUNT builds```
+
+   - **TIME TO FIX BROKEN BUILD**:It is a measure used to describe the time to fix a build that was broken. To practice good CI, failed builds should be fixed quickly. ``` MEAN ( build.fixed_at - build.failed_at ) ```
+
+   - **COMMIT PER DAY**: Mean of number of commits per week **working days**. To practice good CI, the developer should make constant commits. ``` MEAN (   ( COUNT commits  )  GROUP BY working days ```
+
+   - **COMMENTS PER CHANGE**: Mean of the number of comments grouped by changes ( Pull Request or Merge Request). To practice good CI, the developer should have a good communication. ``` MEAN (   ( COUNT comments  ) GROUP BY changes  ) ```
+   
+   - **COVERAGE**:  It is a measure used to describe the degree to which the source code of a program is executed when a particular test suite runs. To practice good CI, the project should have good testing quality. ``` ( COUNT ( LOC with test )  / COUNT ( LOC ) ) * 100```
+
+
+### DORA
+
+  - **DEPLOYMENT FREQUENCY**: Refers to the frequency of successful software releases to production.  ``` Mean (  COUNT deploys  / COUNT days  ) ```
+
+  - **LEAD TIME FOR CHANGES**: Captures the time between a code change commit and its deployable state. ``` Mean ( merge_request <in_prodution_branch>.merged_at - commit.created_at  ) ```
+
+  - **MEAN TIME TO RECOVERY**: Measures the time between a system failure and full recovery. ```  Mean ( bug_issue_closing_date - bug_issues_opening_date)   / COUNT deploys ```
+
+  - **CHANGE FAILURE RATE**: This metric captures the percentage of changes that were made to a code that then resulted in incidents, rollbacks, or any type of production failure. ```( ( COUNT bug_issues / COUNT issues ) / COUNT deploys ) * 100 ```  
+
+
+### OPERATION
+
+  - **NUMBER OF VULNERABILITIES**: Total of security vulnerabilities of the software.  ``` COUNT ( vulnerabilities ) ```
+
+  - **INFRASTRUCTURE COSTS**: The estimate to maintain the DevOps process measured from the time spent on each build.  ``` SUM (  build.finished_at - build.started_at ) ```
+
+
 ## Settings:
 Edit the file <b>src/frontend/.evn.prod</b>, it's necessary to put the production backend API address, as shown in the example below:
 
