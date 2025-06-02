@@ -1,117 +1,59 @@
+<!--
+  --  Universidade Federal do Rio Grande do Norte
+  --  Instituto Metrópole Digital
+  --  Diretoria de Tecnologia da Informação - DTI
+  --
+  --
+  --  Componente publica da aplicação, pode ter as pagina publica do vue ou as paginas internas
+  --
+  --  @author Jadson Santos - jadson.santos@ufrn.br
+  --  @since 30/07/2024
+-->
+
 <template>
-  
-  <div id="app" v-if=" ! enableLoginPage || authenticated ">
-
-    <div v-bind:class="[ sideBarToggled ? 'toggled' : '', 'd-flex']" id="wrapper">
-
-    <app-side-bar/>
-
-    <!-- Page Content -->
-    <div id="page-content-wrapper">
-
-      <app-header/>
-
-      <div class="container-fluid">
-        <router-view> </router-view>
-      </div>
-
-      <app-footer/>
-
-    </div>
-    <!-- /#page-content-wrapper -->
-
-  </div>
-  <!-- /#wrapper -->
-
-  </div> <!-- /#app -->
-
+ 	
+	<!-- 
+		== Primevue toast message components
+		== fica aqui para ser comum a parte interna como externa
+	 -->
+	<Toast />
+	
+	<router-view />
+	
 </template>
 
-<script>
-import AppHeader   from './layout/AppHeader.vue'
-import AppFooter   from './layout/AppFooter.vue'
-import AppSideBar   from './layout/AppSideBar.vue'
+
+<script setup>
+import { useLoginStore } from '@/stores/login'
+import { useParametrosStore } from '@/stores/parametros'
+import { useConfiguracoesStore } from '@/stores/configuracoes'
+import { useCollectorsStore } from '@/stores/collectors'
 
 
-export default {
-  name: 'App',
-  components: {
-    AppHeader, AppFooter, AppSideBar
-  },
+import { primaryColors, surfaces, updateColors } from '@/layout/composables/useColors';
 
-  computed:{
-    sideBarToggled(){   return this.$store.state.general.sideBarToggled   },
+// Inicializa stores
+useLoginStore()
+const parametrosStore = useParametrosStore()
+useConfiguracoesStore();
+const collectorsStore = useCollectorsStore();
 
-    collectorsList(){   return this.$store.state.collectors.collectorsList   },
-
-    publicPath(){ return process.env.VUE_APP_PUBLIC_PATH },
-
-    authenticated() { return this.$store.state.login.authenticated;    },
-
-    enableLoginPage() { return this.$store.state.login.enableLoginPage;    },
-
-  },
-  
-  methods: {
-        async getEnableLoginPage(){
-
-            this.$http.get('/parameter/login-enable')
-            .then(
-                (result) => {
-                  this.$store.commit('login/setEnableLoginPage' , result.data)
-                }
-            )
-        },
-
-        async loadParameters(){
-
-            this.$http.get('/parameter/lock-no-ci-metrics')
-            .then(
-                (result) => {
-                  this.$store.commit('parameter/setLockNoCIMetrics' , result.data)
-                }
-            )
-        },
-
-         // checks if login is enable
-         checkLoginRequired(){
-          if ( this.enableLoginPage && ! this.authenticated  ) {
-            window.location.replace(this.publicPath+'login')
-          }
-        },
-
-    },
-
-    async beforeMount(){
-
-      
-
-      await this.loadParameters()
-
-      await this.getEnableLoginPage()
-
-      setTimeout(() => {
-
-        this.checkLoginRequired();
-
-				if(this.collectorsList.length == 0){
-          this.$http.get('/collector/')
-            .then(result => { 
-                this.$store.commit('collectors/setCollectorsList'      , result.data )
-              }  
-            ).catch(
-                error => { console.log(error.data.messageList) }
-            )
-        }
-
-      }, 1000);
-
-  }
-
+// Carrega o parametros do sistema
+if(!parametrosStore.loaded){
+	parametrosStore.loadParametros()
 }
+
+// Load collectors
+collectorsStore.loadCollectors()
+
+// Atualiza para o cor padrão primaria e background do store (porque a padrao do primevue is emerald)//
+updateColors('primary', { name: primaryColors.value[0].name });
+updateColors('surface', { name: surfaces.value[0].name});
 
 </script>
 
-<style scoped>
 
+
+
+<style scoped>
 </style>

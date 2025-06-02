@@ -33,7 +33,7 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 
 # production data, do not go to version
-holter-devops.env
+holter-ci-2.env
 
 ### STS ###
 .apt_generated

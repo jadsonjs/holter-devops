@@ -41,6 +41,8 @@ import java.math.BigDecimal
 @Table(name = "metric_history", schema = "holter")
 class MetricHistory {
 
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id : Long? = null
@@ -73,6 +75,15 @@ class MetricHistory {
      */
     @Column(name = "metric_info", nullable = true, columnDefinition = "TEXT", length = 1000000000)
     var metricInfo: String = ""
+
+    /**
+     * If the metric have some division like "developer".
+     * the history can be segmented, i.e., in a same period have many values, each one for a segment.
+     */
+    @ManyToOne
+    @JoinColumn(name = "metric_segment_id", nullable = true)
+    var metricSegment : MetricSegment? = null
+
 
     override fun toString(): String {
         return "MetricHistory(id=$id, period=${period.id}, metric=$metric, value=$value)"

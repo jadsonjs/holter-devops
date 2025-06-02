@@ -30,12 +30,17 @@ interface MetricReferenceValueRepository {
 
     fun save(toEntity: MetricReferenceValues): MetricReferenceValues
 
+    fun saveAll(entities: List<MetricReferenceValues>): List<MetricReferenceValues>
+
     fun delete(entity: MetricReferenceValues)
 
     fun findById(id: Long): MetricReferenceValues
 
     fun findAll(): List<MetricReferenceValues>
 
+    fun findAllByProject(idProject: Long): List<MetricReferenceValues>
+
     fun containsReferenceValue(m: MetricReferenceValues): Boolean
 
+    fun deleteAllByProject(idProject: Long)
 }

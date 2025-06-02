@@ -21,9 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- *
- * publicano
- * br.ufrn.caze.publicano
  * Metric
  * 07/05/21
  */
@@ -66,7 +63,6 @@ enum class Metric(val id: Int, val denomination: String, var metricTeam : Metric
     BUGS_RATE                       (26, "Bugs Rate", MetricTeam.DEV, MetricStage.BASIC, MetricCategory.RESILIENCE,   false, true, "0..1", "Number of Bug-related Issues closed divided by the total of ISSUES closed (in the period of analysis)", " COUNT bug_closed_issues / COUNT closed_issues "), // Error rates
 
 
-
     // DORA METRICS //
     DEPLOYMENT_FREQUENCY (31,   "Deployment Frequency", MetricTeam.DEV, MetricStage.CD, MetricCategory.PRODUCTIVITY,   true, false, "days","Refers to the frequency of successful software releases to production",    " Mean (  COUNT deploys  / COUNT days  )"),
     LEAD_TIME_FOR_CHANGES(32,   "Lead Time for Changes", MetricTeam.DEV, MetricStage.CD, MetricCategory.PRODUCTIVITY,   false, false, "days","Captures the time between a code change commit and its deployable state", " Mean ( merge_request <in_prodution_branch>.merged_at - commit.created_at  ) "),
@@ -80,6 +76,10 @@ enum class Metric(val id: Int, val denomination: String, var metricTeam : Metric
     NUMBER_OF_VULNERABILITIES (41, "Number of Vulnerabilities", MetricTeam.OPS, MetricStage.CS, MetricCategory.RESILIENCE,      false, false,  " ","Total of security vulnerabilities of the software", " COUNT ( vulnerabilities )  "),
     INFRASTRUCTURE_COSTS    (42,   "Infrastructure Costs"     , MetricTeam.OPS, MetricStage.CM, MetricCategory.NEUTRAL,         false, false,  "hours","The estimate to maintain the DevOps process measured from the time spent on each build", " SUM (  build.finished_at - build.started_at )"),
 
+    //Repository Metrics
+    COMMITS_PER_DEVELOPER                       (43, "Commits per developer"     , MetricTeam.DEV, MetricStage.REPO, MetricCategory.PRODUCTIVITY,    false,  false,  " ",      "Measures the number of commits per developer.", "COUNT(commits) GROUP BY developer"),
+    APPROVED_MERGE_REQUESTS_PER_DEVELOPER       (44, "Approved merge requests per developer", MetricTeam.DEV, MetricStage.REPO, MetricCategory.PRODUCTIVITY, true, false, " ", "Number of Merge Requests (or Pull Requests) that were approved and merged per project contributor.", " COUNT ( merge_request.merged_at IS NOT NULL ) GROUP BY author "),
+
     ;
 
     // Kotlin allows us to create objects that are common to all instances of a class
@@ -87,8 +87,8 @@ enum class Metric(val id: Int, val denomination: String, var metricTeam : Metric
 
         fun toDto(metric: Metric) : MetricDto {
             return MetricDto(metric.id, metric.denomination, metric.unit, metric.description, metric.formula,
-            metric.metricCategory.name, metric.metricStage.name, metric.metricTeam.name,
-            metric.metricCategory.highlightColor, metric.metricStage.highlightColor, metric.metricTeam.highlightColor)
+                metric.metricCategory.name, metric.metricStage.name, metric.metricTeam.name,
+                metric.metricCategory.highlightColor, metric.metricStage.highlightColor, metric.metricTeam.highlightColor)
         }
 
         fun getById(vararg ids: Int): List<Metric> {
@@ -164,9 +164,42 @@ enum class Metric(val id: Int, val denomination: String, var metricTeam : Metric
 
             // var metrics: Array<Metric> = Metric.values()
             var metrics: List<Metric> = listOf(COVERAGE, BUILD_DURATION, BUILD_ACTIVITY, TIME_TO_FIX_BROKEN_BUILD, COMMIT_PER_DAY, BUILD_HEALTH, COMMENTS_PER_CHANGE,
-                                            NUMBER_OF_CHANGES_DELIVERED, NUMBER_OF_CLOSED_ISSUES, CYCLE_TIME, LEAD_TIME, NUMBER_OF_BUGS, BUGS_RATE,
-                                            DEPLOYMENT_FREQUENCY, LEAD_TIME_FOR_CHANGES, MEAN_TIME_TO_RECOVERY, CHANGE_FAILURE_RATE,
-                                            NUMBER_OF_VULNERABILITIES, INFRASTRUCTURE_COSTS )
+                NUMBER_OF_CHANGES_DELIVERED, NUMBER_OF_CLOSED_ISSUES, CYCLE_TIME, LEAD_TIME, NUMBER_OF_BUGS, BUGS_RATE,
+                DEPLOYMENT_FREQUENCY, LEAD_TIME_FOR_CHANGES, MEAN_TIME_TO_RECOVERY, CHANGE_FAILURE_RATE,
+                NUMBER_OF_VULNERABILITIES, INFRASTRUCTURE_COSTS, COMMITS_PER_DEVELOPER, APPROVED_MERGE_REQUESTS_PER_DEVELOPER )
+            for (m in metrics) {
+                list.add(m);
+            }
+            return list
+        }
+
+        /**
+         * Return all devops metrics
+         */
+        fun getAllDevops(): List<Metric> {
+
+            var list: ArrayList<Metric> = ArrayList()
+
+            // var metrics: Array<Metric> = Metric.values()
+            var metrics: List<Metric> = listOf(COVERAGE, BUILD_DURATION, BUILD_ACTIVITY, TIME_TO_FIX_BROKEN_BUILD, COMMIT_PER_DAY, BUILD_HEALTH, COMMENTS_PER_CHANGE,
+                NUMBER_OF_CHANGES_DELIVERED, NUMBER_OF_CLOSED_ISSUES, CYCLE_TIME, LEAD_TIME, NUMBER_OF_BUGS, BUGS_RATE,
+                DEPLOYMENT_FREQUENCY, LEAD_TIME_FOR_CHANGES, MEAN_TIME_TO_RECOVERY, CHANGE_FAILURE_RATE,
+                NUMBER_OF_VULNERABILITIES, INFRASTRUCTURE_COSTS )
+            for (m in metrics) {
+                list.add(m);
+            }
+            return list
+        }
+
+        /**
+         * Return all repository metrics
+         */
+        fun getAllRepository(): List<Metric> {
+
+            var list: ArrayList<Metric> = ArrayList()
+
+            // var metrics: Array<Metric> = Metric.values()
+            var metrics: List<Metric> = listOf( COMMITS_PER_DEVELOPER, APPROVED_MERGE_REQUESTS_PER_DEVELOPER )
             for (m in metrics) {
                 list.add(m);
             }

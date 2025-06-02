@@ -26,7 +26,9 @@ package br.ufrn.caze.holterci.converters
 
 import br.ufrn.caze.holterci.domain.dtos.user.UserDto
 import br.ufrn.caze.holterci.domain.models.user.User
-import org.mapstruct.*
+import org.mapstruct.InjectionStrategy
+import org.mapstruct.Mapper
+import org.mapstruct.Mapping
 
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR,
     uses = arrayOf(PermissionDtoConverter::class) )

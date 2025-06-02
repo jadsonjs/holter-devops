@@ -1,0 +1,6 @@
+@use 'sass:meta';
+
+@layer vendor {
+	@include meta.load-css('primevue/resources/themes/lara-light-blue/theme.css');
+	@include meta.load-css('primeicons/primeicons.css');
+}

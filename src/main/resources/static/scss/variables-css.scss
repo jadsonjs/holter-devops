@@ -1,0 +1,52 @@
+@use 'variables';
+
+@layer custom {
+	/* CSS Variables */
+
+	@each $key, $color in variables.$colors {
+		:root {
+			--#{$key}: #{$color};
+
+			/* backgrounds */
+			--bg-#{$key}: #{$color};
+			--bg-#{$key}-focusable: #{$color};
+
+			/* borders */
+			--border-#{$key}: #{$color};
+			--border-#{$key}-focusable: #{$color};
+
+			/* texts */
+			--text-#{$key}: #{$color};
+			--text-#{$key}-focusable: #{$color};
+
+			&.high-contrast {
+				/* backgrounds */
+				&.hc-color-scheme-1 {
+					--bg-#{$key}: #{map-get(variables.$colors, 'high-contrast-background-1')};
+				}
+				&.hc-color-scheme-2 {
+					--bg-#{$key}: #{map-get(variables.$colors, 'high-contrast-background-2')};
+				}
+				--bg-#{$key}-focusable: #{map-get(variables.$colors, 'high-contrast-interactive')};
+
+				/* borders */
+				&.hc-color-scheme-1 {
+					--border-#{$key}: #{map-get(variables.$colors, 'high-contrast-foreground-1')};
+				}
+				&.hc-color-scheme-2 {
+					--border-#{$key}: #{map-get(variables.$colors, 'high-contrast-foreground-2')};
+				}
+				--border-#{$key}-focusable: #{map-get(variables.$colors, 'high-contrast-interactive')};
+
+				/* text */
+				&.hc-color-scheme-1 {
+					--text-#{$key}: #{map-get(variables.$colors, 'high-contrast-foreground-1')};
+				}
+				&.hc-color-scheme-2 {
+					--text-#{$key}: #{map-get(variables.$colors, 'high-contrast-foreground-2')};
+				}
+				--text-#{$key}-focusable: #{map-get(variables.$colors, 'high-contrast-interactive')};
+			}
+		}
+	}
+}

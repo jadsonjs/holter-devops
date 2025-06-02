@@ -27,10 +27,8 @@ package br.ufrn.caze.holterci.collectors.impl.gitlab.performance
 import br.com.jadson.snooper.gitlab.data.issue.GitLabIssueInfo
 import br.com.jadson.snooper.gitlab.operations.GitLabIssueQueryExecutor
 import br.ufrn.caze.holterci.collectors.Collector
-import br.ufrn.caze.holterci.domain.models.metric.Metric
-import br.ufrn.caze.holterci.domain.models.metric.MetricRepository
-import br.ufrn.caze.holterci.domain.models.metric.Period
-import br.ufrn.caze.holterci.domain.models.metric.Project
+import br.ufrn.caze.holterci.collectors.dtos.CollectResult
+import br.ufrn.caze.holterci.domain.models.metric.*
 import br.ufrn.caze.holterci.domain.utils.GitLabUtil
 import br.ufrn.caze.holterci.domain.utils.LabelsUtil
 import org.springframework.beans.factory.annotation.Autowired
@@ -53,15 +51,15 @@ class NClosedIssuesErrorGitlabCollector
     /**
      * GET ALL ISSUES CLOSED ASSOCIATED WITH ERROR in period
      */
-    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): Pair<BigDecimal, String>  {
+    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): CollectResult {
 
         val projectConfiguration = projectRepository.findConfigurationByIdProject(project.id!!)
 
         val executor = GitLabIssueQueryExecutor()
-        executor.setGitlabURL(projectConfiguration.mainRepositoryURL)
-        executor.setGitlabToken(projectConfiguration.mainRepositoryToken)
+        executor.setGitlabURL(projectConfiguration.mainRepository.url)
+        executor.setGitlabToken(projectConfiguration.mainRepository.token)
         executor.setDisableSslVerification(disableSslVerification)
-        executor.setQueryParameters(arrayOf("scope=all", "state=closed", "labels="+projectConfiguration.issuesErrosLabels))
+        executor.setQueryParameters(arrayOf("scope=all", "state=closed", "labels="+projectConfiguration.mainRepository.issuesErrosLabels))
         executor.setPageSize(100)
 
         // bring all issues first time to memory
@@ -72,12 +70,11 @@ class NClosedIssuesErrorGitlabCollector
         var issuesOfPeriod = gitLabUtils.getIssueClosedInPeriod(issuesCache, period.init, period.end)
         var errorIssuesOfPeriod = mutableListOf<GitLabIssueInfo>()
         for (issue in issuesOfPeriod){
-            if(isErrorIssue(issue, projectConfiguration.issuesErrosLabels))
+            if(isErrorIssue(issue, projectConfiguration.mainRepository.issuesErrosLabels))
                 errorIssuesOfPeriod.add(issue)
         }
 
-        return Pair(BigDecimal(errorIssuesOfPeriod.size), generateMetricInfo(period, errorIssuesOfPeriod ))
-
+        return CollectResult(BigDecimal(errorIssuesOfPeriod.size), generateMetricInfo(period, errorIssuesOfPeriod ), null)
     }
 
     override fun cleanCache() {

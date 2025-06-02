@@ -47,6 +47,13 @@ interface UserJPARepository : JpaRepository<User, Long> {
             " WHERE u.alert = true AND ( per.project.id = ?1 OR per.project IS NULL ) ")
     fun findUsersEmailsSendAlert(idProject: Long): List<String>
 
+    /**
+     * Return all user's emails where a flag alert is marked as ''true''
+     */
+    @Query( " SELECT u.email " +
+            " FROM User u " +
+            " WHERE u.alert = true")
+    fun findUsersEmailsSendAlert(): List<String>
 
     /**
      * it can not exist 2 users same email in the tool

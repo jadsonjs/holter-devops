@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  *
  *
- * holter-devops
+ * holter-ci
  * br.ufrn.caze.publicano.domain.collectors.github
  * NClosedMergeRequestsGitabCollector
  * 20/07/21
@@ -32,10 +32,8 @@ package br.ufrn.caze.holterci.collectors.impl.gitlab.performance;
 import br.com.jadson.snooper.gitlab.data.merge.GitLabMergeRequestInfo
 import br.com.jadson.snooper.gitlab.operations.GitLabMergeRequestQueryExecutor
 import br.ufrn.caze.holterci.collectors.Collector
-import br.ufrn.caze.holterci.domain.models.metric.Metric
-import br.ufrn.caze.holterci.domain.models.metric.MetricRepository
-import br.ufrn.caze.holterci.domain.models.metric.Period
-import br.ufrn.caze.holterci.domain.models.metric.Project
+import br.ufrn.caze.holterci.collectors.dtos.CollectResult
+import br.ufrn.caze.holterci.domain.models.metric.*
 import br.ufrn.caze.holterci.domain.utils.GitLabUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -61,13 +59,13 @@ class NClosedMergeRequestsGitabCollector
      * GET ALL MERGE REQUESTS closed in period
      *
      */
-    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): Pair<BigDecimal, String> {
+    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): CollectResult {
 
         val projectConfiguration = projectRepository.findConfigurationByIdProject(project.id!!)
 
         val executor = GitLabMergeRequestQueryExecutor()
-        executor.setGitlabURL(projectConfiguration.mainRepositoryURL)
-        executor.setGitlabToken(projectConfiguration.mainRepositoryToken)
+        executor.setGitlabURL(projectConfiguration.mainRepository.url)
+        executor.setGitlabToken(projectConfiguration.mainRepository.token)
         executor.setDisableSslVerification(disableSslVerification)
         executor.setQueryParameters(arrayOf("state=closed"))
         executor.setPageSize(100)
@@ -82,7 +80,7 @@ class NClosedMergeRequestsGitabCollector
         // why?  because the github API, there is no a filter by date, so we have to bing all form the API and filter manually.
         // this is time consuming
         var mergeRequestClosedOfPeriod = gitLabUtils.getMRsClosedInPeriod(mergeRequestCache, period.init, period.end);
-        return Pair(BigDecimal(mergeRequestClosedOfPeriod.size), generateMetricInfo(period , mergeRequestClosedOfPeriod))
+        return CollectResult(BigDecimal(mergeRequestClosedOfPeriod.size), generateMetricInfo(period , mergeRequestClosedOfPeriod), null)
 
     }
 

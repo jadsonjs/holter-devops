@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  *
  *
- * holter-devops
+ * holter-ci
  * br.ufrn.caze.publicano.domain.collectors
  * CollectorFactory
  * 01/07/21
@@ -30,7 +30,13 @@
 package br.ufrn.caze.holterci.collectors;
 
 import br.ufrn.caze.holterci.collectors.impl.codecov.CoverageCodeCovCollector
-import br.ufrn.caze.holterci.collectors.impl.github.*
+import br.ufrn.caze.holterci.collectors.impl.github.ci.CommitPerDayGitHubCollector
+import br.ufrn.caze.holterci.collectors.impl.github.ci.NClosedIssuesErrorGitHubCollector
+import br.ufrn.caze.holterci.collectors.impl.github.ci.NClosedPullRequestsGitHubCollector
+import br.ufrn.caze.holterci.collectors.impl.github.dora.DeploymentFrequencyGitHubCollector
+import br.ufrn.caze.holterci.collectors.impl.github.dora.LeadTimeForChangesGitHubCollector
+import br.ufrn.caze.holterci.collectors.impl.github.repository.ApprovedPullRequestsPerDeveloperGitHubCollector
+import br.ufrn.caze.holterci.collectors.impl.github.repository.CommitPerDeveloperGitHubCollector
 import br.ufrn.caze.holterci.collectors.impl.gitlab.ci.*
 import br.ufrn.caze.holterci.collectors.impl.gitlab.dora.ChangeFailureRateByIssueGitlabCollector
 import br.ufrn.caze.holterci.collectors.impl.gitlab.dora.DeploymentFrequencyByTagGitlabCollector
@@ -38,6 +44,8 @@ import br.ufrn.caze.holterci.collectors.impl.gitlab.dora.LeadTimeForChangesGitla
 import br.ufrn.caze.holterci.collectors.impl.gitlab.dora.MeanTimetoRecoverByIssueGitlabCollector
 import br.ufrn.caze.holterci.collectors.impl.gitlab.operation.CPUUsegeBuildGitlabCollector
 import br.ufrn.caze.holterci.collectors.impl.gitlab.performance.*
+import br.ufrn.caze.holterci.collectors.impl.gitlab.repository.ApprovedMergeRequestsPerDeveloperGitlabCollector
+import br.ufrn.caze.holterci.collectors.impl.gitlab.repository.CommitPerDeveloperGitLabCollector
 import br.ufrn.caze.holterci.collectors.impl.sonar.CoverageSonarCollector
 import br.ufrn.caze.holterci.collectors.impl.sonar.NumberOfVulnerabilitiesSonarCollector
 import org.springframework.beans.factory.annotation.Autowired
@@ -69,6 +77,12 @@ class CollectorFactory {
     lateinit var deploymentFrequencyGitHubCollector : DeploymentFrequencyGitHubCollector
     @Autowired
     lateinit var leadTimeForChangesGitHubCollector : LeadTimeForChangesGitHubCollector
+    // REPOSITORY Metrics
+    @Autowired
+    lateinit var commitPerDeveloperGitHubCollector: CommitPerDeveloperGitHubCollector
+    @Autowired
+    lateinit var approvedPullRequestsPerDeveloperGitHubCollector: ApprovedPullRequestsPerDeveloperGitHubCollector
+
 
 
     /******************* GITLAB *******************/
@@ -106,6 +120,11 @@ class CollectorFactory {
     @Autowired
     lateinit var cpuUsegeBuildGitlabCollector : CPUUsegeBuildGitlabCollector
 
+    //REPOSITORY Metrics
+    @Autowired
+    lateinit var commitPerDeveloperGitLabCollector: CommitPerDeveloperGitLabCollector
+    @Autowired
+    lateinit var approvedMergeRequestsPerDeveloperGitlabCollector: ApprovedMergeRequestsPerDeveloperGitlabCollector
 
 
     // DORA Metrics
@@ -164,6 +183,10 @@ class CollectorFactory {
             collectors.add(deploymentFrequencyGitHubCollector)
             collectors.add(leadTimeForChangesGitHubCollector)
 
+            //Repository
+            collectors.add(commitPerDeveloperGitHubCollector)
+            collectors.add(approvedPullRequestsPerDeveloperGitHubCollector)
+
 
             /******************* GITLAB *******************/
 
@@ -197,6 +220,9 @@ class CollectorFactory {
             // operation
             collectors.add(cpuUsegeBuildGitlabCollector)
 
+            //Repository
+            collectors.add(commitPerDeveloperGitLabCollector)
+            collectors.add(approvedMergeRequestsPerDeveloperGitlabCollector)
 
 
 

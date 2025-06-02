@@ -76,7 +76,6 @@ class Project {
     @Column(name = "active", nullable = false)
     var active : Boolean = true;
 
-
     constructor(){
     }
 
@@ -84,7 +83,7 @@ class Project {
         this.id = id
     }
 
-    constructor(id : Long, name : String, organization : String, active : Boolean){
+    constructor(id: Long, name: String, organization: String, active: Boolean) {
         this.id = id
         this.name = name
         this.organization = organization

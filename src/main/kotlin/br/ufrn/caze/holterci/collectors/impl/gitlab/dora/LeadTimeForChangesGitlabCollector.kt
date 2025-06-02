@@ -28,10 +28,8 @@ import br.com.jadson.snooper.gitlab.data.commit.GitLabCommitInfo
 import br.com.jadson.snooper.gitlab.operations.GitLabCommitQueryExecutor
 import br.com.jadson.snooper.gitlab.operations.GitLabMergeRequestQueryExecutor
 import br.ufrn.caze.holterci.collectors.Collector
-import br.ufrn.caze.holterci.domain.models.metric.Metric
-import br.ufrn.caze.holterci.domain.models.metric.MetricRepository
-import br.ufrn.caze.holterci.domain.models.metric.Period
-import br.ufrn.caze.holterci.domain.models.metric.Project
+import br.ufrn.caze.holterci.collectors.dtos.CollectResult
+import br.ufrn.caze.holterci.domain.models.metric.*
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
 import java.util.*
@@ -55,20 +53,20 @@ class LeadTimeForChangesGitlabCollector
     : Collector(UUID.fromString("9133f323-0b64-47db-ac80-db42a07ceefd"), Metric.LEAD_TIME_FOR_CHANGES, "Lead time for changes at Gitlab", MetricRepository.GITLAB) {
 
 
-    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): Pair<BigDecimal, String>  {
+    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): CollectResult {
 
         val projectConfiguration = projectRepository.findConfigurationByIdProject(project.id!!)
 
         val executor = GitLabCommitQueryExecutor()
-        executor.setGitlabURL(projectConfiguration.mainRepositoryURL)
-        executor.setGitlabToken(projectConfiguration.mainRepositoryToken)
+        executor.setGitlabURL(projectConfiguration.mainRepository.url)
+        executor.setGitlabToken(projectConfiguration.mainRepository.token)
         executor.setDisableSslVerification(disableSslVerification)
         executor.setPageSize(100)
         executor.setQueryParameters(arrayOf("since=" + dateUtil.toIso8601(period.init), "until=" + dateUtil.toIso8601(period.end)))
 
         val executorMergs = GitLabMergeRequestQueryExecutor()
-        executorMergs.setGitlabURL(projectConfiguration.mainRepositoryURL)
-        executorMergs.setGitlabToken(projectConfiguration.mainRepositoryToken)
+        executorMergs.setGitlabURL(projectConfiguration.mainRepository.url)
+        executorMergs.setGitlabToken(projectConfiguration.mainRepository.token)
         executorMergs.setDisableSslVerification(disableSslVerification)
         executorMergs.setPageSize(100)
 
@@ -89,13 +87,14 @@ class LeadTimeForChangesGitlabCollector
         for (commit in commitsOfPeriod) { // for all commits in the period
 
             // get the time when the merge request associated with this commit was merged in "prodution" branch
+            // https://gitlab.com.br/api/v4/projects/desenvolvimento%2Fbase-imd/merge_requests?source_sha=06b4f6c9c327564b3f4a8e9eb6ce9e1f140da735
             val mergeList =
                 executorMergs.listMergeRequestsAssociatedwithCommit(project.organization + "/" + project.name, commit.id)
 
             mergeRequests@
             for (mergeRequest in mergeList) {
 
-                if(mergeRequest.target_branch.equals(projectConfiguration.produtionBranch, true)) { // if the pull request was to the production
+                if(mergeRequest.target_branch.equals(projectConfiguration.mainRepository.produtionBranch, true)) { // if the pull request was to the production
                     if (mergeRequest.merged_at != null && commit.created_at != null) {
                         var duration = dateUtil.daysBetweenInclusive(dateUtil.toLocalDateTime(commit.created_at), dateUtil.toLocalDateTime(mergeRequest.merged_at) )
                         commitsLeadTime.add( duration.toLong()  )
@@ -109,7 +108,7 @@ class LeadTimeForChangesGitlabCollector
         }
 
         var mean = mathUtil.meanOfLongValues(commitsLeadTime)
-        return Pair(mean, generateMetricInfo(period , commitsOfPeriod, commitsLeadTime))
+        return CollectResult(mean, generateMetricInfo(period , commitsOfPeriod, commitsLeadTime), null)
     }
 
     override fun cleanCache() {

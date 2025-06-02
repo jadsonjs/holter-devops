@@ -1,0 +1,88 @@
+<template>
+  <div>
+    <div class="flex items-center mb-3">
+      <Ajuda
+        texto="Measurements and indicators that provide insights into the efficiency, quality, and effectiveness of the integration process"
+        titulo="CI Metrics" severity="secondary" icon="fa-solid fa-circle-info fa-lg" enableHover>
+      </Ajuda>
+      <p class="font-bold ml-1"> CI Metrics</p>
+    </div>
+
+    <span v-for="metric in ciMetricsList" :key="metric.metric.id">
+
+      <span class="metric_box" v-bind:style="{ 'background-color': boxBackgroundColor(metric) }">
+        <div class="box_title">
+          {{ metric.metric.denomination }}
+        </div>
+        <div>
+          <span class="box_value"
+            v-bind:style="{ 'color': metric.overReferenceValue ? '' : 'red', 'background-color': metric.overReferenceValue ? '' : 'var(--surface-ground)' }">Current
+            Value: {{ metric.lastValue }} <span v-if="isStringValida(metric.metric.unit)" style="font-size: small;"> (
+              {{ metric.metric.unit }} )</span> </span>
+          <br>
+          <span class="box_ref_value">
+            Reference Value: {{ metric.valueReference }} <span v-if="isStringValida(metric.metric.unit)"
+              style="font-size: small;"> ( {{ metric.metric.unit }}
+              )</span>
+          </span>
+        </div>
+        <div class="p-1 flex">
+          <div class="mb-auto mt-auto">
+            <Button class="data-button" icon="fa-solid fa-chart-line" severity="info" text size="sm" rounded raised
+              v-on:click="showMetricEvolution(metric.metric.id)">
+            </Button>
+          </div>
+          <div class="mt-1 ml-auto">
+            <Ajuda :texto="metric.metric.description" :titulo="metric.metric.denomination"
+              :rotulo="metric.metric.formula" :isAlternateStyle="true" :raised=false
+              :alternateBackgroundColor="boxBackgroundColor(metric)" enableHover />
+          </div>
+        </div>
+      </span>
+
+    </span>
+
+  </div>
+</template>
+
+<script setup>
+import Ajuda from '@/components/base/Ajuda.vue';
+import { isStringValida } from "@/utils/funcoes.js";
+
+const props = defineProps({
+  ciMetricsList: {},
+
+  highlight: {
+    type: String,
+    required: false
+  },
+
+  chartDegreeCIData: {
+    type: Array,
+    required: false
+  },
+
+  chartDegreeCIOptions: {}
+})
+
+
+const emit = defineEmits(['showMetricEvolution'])
+
+const showMetricEvolution = (metricId) => {
+  // Emit an event to notify the parent about the change
+  emit('showMetricEvolution', metricId);
+}
+
+const boxBackgroundColor = (metric) => {
+  return props.highlight === 'category'
+    ? metric.metric.categoryHighlightColor
+    : (props.highlight === 'stage'
+      ? metric.metric.stageHighlightColor
+      : (props.highlight === 'team'
+        ? metric.metric.teamHighlightColor
+        : ''));
+};
+
+</script>
+
+<style lang="scss" scoped></style>

@@ -1,0 +1,33 @@
+@use './layers';
+
+// vendor
+@use './vendor/bootstrap-source';
+@use './vendor/primevue-source';
+
+// custom
+@use './bootstrap';
+@use './primevue';
+@use './animations';
+@use './variables-css';
+@use './variables-classes';
+
+@layer custom {
+	html {
+		height: 100%;
+		min-height: 100%;
+
+		body {
+			display: flex;
+			flex-direction: column;
+			min-height: 100%;
+			height: auto;
+
+			#app {
+				flex-grow: 1;
+				display: grid;
+				grid-template-columns: 100%;
+				grid-template-rows: min-content auto min-content;
+			}
+		}
+	}
+}

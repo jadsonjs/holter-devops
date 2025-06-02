@@ -1,0 +1,155 @@
+.bg_green {
+  background: green;
+}
+
+.bg_red {
+  background: red;
+}
+
+.legend {
+  font-weight: bold;
+  color: white;
+  font-size: 16px;
+}
+
+
+/* default box to show the metrics value */
+.metric_box {
+  width: 400px;
+  height: 100px;
+  text-align: center;
+  display: table-cell;
+  vertical-align: middle;
+  font-weight: bold;
+  color: white;
+  font-size: 20px;
+  border: 5px solid var(--surface-ground);
+  border-radius: 20px;
+}
+
+.metric_box .data-button {
+  background: var(--surface-ground) !important;
+  border-color: transparent !important;
+  color: var(--text-color) !important;
+}
+
+.metric_box .data-button:hover {
+  background: var(--surface-ground) !important;
+  color: var(--text-color);
+  filter: brightness(0.8); 
+}
+
+
+.box_title{
+  text-decoration: underline;
+  font-size: 26px;
+}
+
+/* Values of the metric inside the box */
+.box_value{
+  font-size: 28px;
+}
+
+/* Reference Values of the metric inside the box */
+.box_ref_value{
+  font-size: 20px;
+}
+
+
+/** a box where we have just the name of the metric */
+.metric_legend {
+  vertical-align: middle;
+  font-weight: bold;
+  color: white;
+  font-size: 24px;
+  border: 1px solid white;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+/* special box of control metric of the project */
+.control_metrics_box {
+  width: 300px;
+  height: 100px;
+  text-align: center;
+  display: table-cell;
+  vertical-align: middle;
+  font-weight: bold;
+  color: black;
+  border: 5px solid white;
+  border-radius: 25px;
+  background: lightgray;
+}
+
+/* box to show the Dora metric value 
+.dora_metric_box {
+  width: 300px;
+  height: 100px;
+  text-align: center;
+  display: table-cell;
+  vertical-align: middle;
+  font-weight: bold;
+  color: white;
+  border: 5px solid white;
+  border-radius: 20px;
+  background: black;
+}
+*/
+
+
+
+/* box to show metric about reliability (confiabilidade, erros)  
+.quality_metric_box {
+  width: 300px;
+  height: 100px;
+  text-align: center;
+  display: table-cell;
+  vertical-align: middle;
+  font-weight: bold;
+  color: white;
+  border: 5px solid white;
+  border-radius: 25px;
+  background: IndianRed;
+}
+*/
+
+/* box to show metric about delivery process (productivity) 
+.productivity_metric_box {
+  width: 300px;
+  height: 100px;
+  text-align: center;
+  display: table-cell;
+  vertical-align: middle;
+  font-weight: bold;
+  color: white;
+  border: 5px solid white;
+  border-radius: 25px;
+  background: RoyalBlue;
+}
+*/
+
+
+
+/** Box with information abou the evolution of metrics (charts )*/
+.evolution_info_box {
+  /* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  margin: 15px;
+  transition: all 0.2s ease-in-out;
+  color: white;
+  background-color: gray;
+}
+
+/* On mouse-over, add a deeper shadow 
+.evolution_info_box:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  background-color: var(--surface-ground);
+  border: 10px solid lightblue;
+  color: var(--text-color);
+  cursor: zoom-in;
+} */
+
+/* Add some padding inside the card container */
+.evolution_info_box .container{
+  padding: 2px 16px;
+}

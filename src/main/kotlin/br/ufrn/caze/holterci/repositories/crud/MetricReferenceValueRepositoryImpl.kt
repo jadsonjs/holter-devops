@@ -33,6 +33,10 @@ class MetricReferenceValueRepositoryImpl (private val jpaRepository : MetricRefe
         return jpaRepository.save(entity)
     }
 
+    override fun saveAll(entities: List<MetricReferenceValues>): List<MetricReferenceValues> {
+        return jpaRepository.saveAll(entities)
+    }
+
     override fun delete(entity: MetricReferenceValues) {
         jpaRepository.delete(entity)
     }
@@ -45,7 +49,15 @@ class MetricReferenceValueRepositoryImpl (private val jpaRepository : MetricRefe
         return jpaRepository.findAll()
     }
 
+    override fun findAllByProject(idProject: Long): List<MetricReferenceValues> {
+        return jpaRepository.findAllByProject(idProject)
+    }
+
     override fun containsReferenceValue(rv: MetricReferenceValues): Boolean {
-        return if (rv.id == null ) jpaRepository.countReferenceValue(rv.metric) > 0 else jpaRepository.countReferenceValue(rv.metric, rv.id) > 0
+        return if (rv.id == null ) jpaRepository.countReferenceValue(rv.metric, rv.project) > 0 else jpaRepository.countReferenceValue(rv.metric, rv.id, rv.project) > 0
+    }
+
+    override fun deleteAllByProject(idProject: Long) {
+        return jpaRepository.deleteAllByProject(idProject)
     }
 }

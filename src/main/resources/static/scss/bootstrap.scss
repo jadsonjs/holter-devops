@@ -1,0 +1,339 @@
+/**
+ * Universidade Federal do Rio Grande do Norte
+ * Instituto Metrópole Digital
+ * Diretoria de Tecnologia da Informação
+ *
+ * Arquivo de sobreposição das variáveis Sass padrões da biblioteca Bootstrap
+ *
+ * @since 29/05/2022
+ */
+@use 'sass:color';
+@use 'variables';
+@use 'variables-css';
+
+@layer vendor.bootstrap {
+	// THEME
+	:root {
+		--bs-body-bg: var(--bg-white);
+		--bs-body-color: var(--text-black);
+		--bs-heading-color: var(--text-black);
+		--bs-primary-rgb: #{red(variables.$primary-hsl), green(variables.$primary-hsl), blue(variables.$primary-hsl)};
+		--bs-secondary-rgb: #{red(variables.$secondary-hsl), green(variables.$secondary-hsl), blue(variables.$secondary-hsl)};
+
+		&.high-contrast {
+			--bs-link-color-rgb: #{red(variables.$high-contrast-interactive-hsl), green(variables.$high-contrast-interactive-hsl),
+				blue(variables.$high-contrast-interactive-hsl)};
+			--bs-secondary-color: var(--text-secondary);
+		}
+	}
+
+	// ACCORDION
+	.accordion {
+		$fill: #{str-slice(ie_hex_str(variables.$secondary-hsl), 4)};
+		--bs-accordion-btn-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23#{$fill}'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+		--bs-accordion-btn-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23#{$fill}'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+	}
+
+	.high-contrast {
+		.accordion {
+			$fill: #{str-slice(ie_hex_str(variables.$high-contrast-interactive-hsl), 4)};
+			--bs-accordion-btn-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23#{$fill}'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+			--bs-accordion-btn-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23#{$fill}'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+		}
+	}
+
+	// ALERT
+	.high-contrast {
+		.alert {
+			color: var(--text-black);
+			background-color: var(--bg-primary);
+		}
+	}
+
+	// AVATAR
+	.b-avatar {
+		color: var(--bg-white) !important;
+		background-color: var(--bg-primary-focusable) !important;
+	}
+
+	// BUTTON
+	.btn {
+		--bs-btn-border-radius: 0.5rem;
+	}
+
+	.btn-close {
+		$fill: #{str-slice(ie_hex_str(variables.$secondary-hsl), 4)};
+		--bs-btn-close-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23#{$fill}'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e");
+		--bs-btn-close-opacity: 1;
+	}
+
+	.high-contrast {
+		.btn-close {
+			$fill: #{str-slice(ie_hex_str(variables.$high-contrast-interactive-hsl), 4)};
+			--bs-btn-close-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23#{$fill}'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e");
+		}
+	}
+
+	.btn-link {
+		--bs-btn-color: var(--text-primary-focusable);
+		--bs-btn-hover-color: var(--text-primary-lighter-20);
+		--bs-btn-active-color: var(--text-secondary);
+	}
+
+	.btn-primary {
+		--bs-btn-bg: var(--bg-primary-focusable);
+		--bs-btn-color: #fff;
+		--bs-btn-border-color: var(--bg-primary-focusable);
+
+		--bs-btn-hover-bg: var(--bg-primary-lighter-20-focusable);
+		--bs-btn-hover-color: #fff;
+		--bs-btn-hover-border-color: var(--border-primary-lighter-20-focusable);
+
+		--bs-btn-focus-shadow-rgb: 130, 138, 145;
+
+		--bs-btn-active-bg: var(--bg-primary-lighter-10);
+		--bs-btn-active-color: var(--text-white-focusable);
+		--bs-btn-active-border-color: var(--border-primary-lighter-10-focusable);
+		--bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+
+		--bs-btn-disabled-bg: var(--bg-primary);
+		--bs-btn-disabled-color: var(--text-white);
+		--bs-btn-disabled-border-color: var(--border-primary);
+	}
+
+	.btn-secondary {
+		--bs-btn-bg: var(--bg-secondary-focusable);
+		--bs-btn-color: #fff;
+		--bs-btn-border-color: var(--bg-secondary-focusable);
+
+		--bs-btn-hover-bg: var(--bg-primary-lighter-20-focusable);
+		--bs-btn-hover-color: #fff;
+		--bs-btn-hover-border-color: var(--border-primary-lighter-20-focusable);
+
+		--bs-btn-focus-shadow-rgb: 130, 138, 145;
+
+		--bs-btn-active-bg: var(--bg-primary-lighter-10);
+		--bs-btn-active-color: var(--text-white-focusable);
+		--bs-btn-active-border-color: var(--border-primary-lighter-10-focusable);
+		--bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+
+		--bs-btn-disabled-bg: var(--bg-secondary);
+		--bs-btn-disabled-color: var(--text-white);
+		--bs-btn-disabled-border-color: var(--border-secondary);
+	}
+
+	// CARD
+	.card {
+		--bs-card-cap-color: var(--text-black);
+		--bs-card-color: var(--text-black);
+		--bs-card-bg: var(--bg-white);
+		--bs-card-border-color: var(--border-black-20);
+	}
+
+	// DROPDOWN
+	.dropdown-menu {
+		--bs-dropdown-bg: var(--bg-white);
+		--bs-dropdown-border-color: var(--border-black-20);
+		--bs-dropdown-color: var(--text-black);
+		--bs-dropdown-link-color: var(--text-black-focusable);
+		--bs-dropdown-link-hover-color: var(--text-black);
+		--bs-dropdown-link-hover-bg: var(--bg-black-10);
+		--bs-dropdown-link-active-bg: var(--bg-primary-focusable);
+	}
+
+	// FORM CONTROL
+	.form-control {
+		background-color: var(--bg-white);
+		border-color: var(--border-black-20-focusable);
+		color: var(--text-black);
+
+		&:focus {
+			color: var(--text-black);
+			background-color: var(--bg-white);
+		}
+
+		&:disabled {
+			background-color: var(--bg-black-10);
+			cursor: not-allowed;
+
+			&:not(.is-valid, .is-invalid) {
+				border-color: var(--border-black-20);
+			}
+		}
+	}
+
+	// FORM CHECK
+	.form-check-input {
+		--bs-border-color: var(--border-black-20-focusable);
+
+		&:checked {
+			background-color: var(--bg-primary-focusable);
+			border-color: var(--border-primary-focusable);
+		}
+	}
+
+	.high-contrast {
+		.form-switch {
+			.form-check-input {
+				&:not(:checked) {
+					--bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%28255, 255, 255, 0.25%29'/%3e%3c/svg%3e");
+				}
+			}
+		}
+	}
+
+	// FORM SELECT
+	.form-select {
+		background-color: var(--bg-white);
+		color: var(--text-black-focusable);
+
+		&:not(:disabled) {
+			--bs-border-color: var(--border-black-20-focusable);
+		}
+
+		&:disabled {
+			color: var(--text-black);
+			background-color: var(--bg-black-10);
+			cursor: not-allowed;
+
+			&:not(.is-valid, .is-invalid) {
+				border-color: var(--border-black-20);
+			}
+		}
+	}
+
+	.high-contrast {
+		.form-select {
+			&:not(:disabled) {
+				$stroke: #{str-slice(ie_hex_str(variables.$high-contrast-interactive-hsl), 4)};
+				--bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23#{$stroke}' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+			}
+		}
+	}
+
+	// LABELS
+	@mixin asterisk {
+		&::after {
+			content: '*';
+			color: var(--text-primary);
+			margin-left: 0.35rem;
+		}
+	}
+
+	@mixin optional {
+		&::after {
+			content: '(Opcional)';
+			opacity: 0.5;
+			margin-left: 0.35rem;
+			font-size: 0.875rem;
+		}
+	}
+
+	label {
+		color: var(--text-black-focusable);
+
+		&:not(.form-check-label) {
+			font-weight: bold;
+		}
+
+		&[required]:not([required='false']),
+		&.required {
+			@include asterisk();
+		}
+
+		&.optional {
+			@include optional();
+		}
+	}
+
+	div.required label {
+		@include asterisk();
+	}
+
+	div.optional label {
+		@include optional();
+	}
+
+	.is-invalid label {
+		color: var(--bs-form-invalid-color);
+	}
+
+	// LIST GROUP
+	.list-group {
+		--bs-list-group-bg: var(--bg-white);
+		--bs-list-group-color: var(--text-black-focusable);
+		--bs-list-group-border-color: var(--border-black-10);
+		--bs-list-group-action-hover-color: var(--bg-white);
+		--bs-list-group-action-hover-bg: var(--bg-primary-focusable);
+		--bs-list-group-action-active-color: var(--text-black);
+		--bs-list-group-action-active-bg: var(--bg-white);
+		--bs-list-group-active-bg: var(--bg-primary);
+		--bs-list-group-active-border-color: var(--border-primary);
+	}
+
+	// MODAL
+	.modal {
+		--bs-modal-bg: var(--bg-white);
+		--bs-modal-color: var(--text-black);
+		--bs-border-color: transparent;
+	}
+
+	// OFFCANVAS
+	.offcanvas {
+		--bs-offcanvas-bg: var(--bg-white);
+	}
+
+	// PAGINATION
+	.pagination {
+		--bs-pagination-bg: var(--bg-transparent);
+		--bs-pagination-color: var(--text-primary-focusable);
+		--bs-pagination-border-color: var(--border-black-20-focusable);
+
+		--bs-pagination-active-bg: var(--bg-primary-focusable);
+		--bs-pagination-active-color: #fff;
+		--bs-pagination-active-border-color: var(--border-transparent-focusable);
+
+		--bs-pagination-hover-bg: var(--bg-primary-lighter-20-focusable);
+		--bs-pagination-hover-color: #fff;
+		--bs-pagination-hover-border-color: var(--border-black-20-focusable);
+
+		--bs-pagination-disabled-bg: var(--bg-transparent);
+		--bs-pagination-disabled-color: var(--text-black-40);
+		--bs-pagination-disabled-border-color: var(--border-black-20);
+	}
+
+	// POPOVER
+	.popover {
+		--bs-popover-bg: var(--bg-white);
+		--bs-popover-border-color: var(--border-black-30);
+		--bs-popover-body-color: var(--text-black);
+		--bs-popover-header-bg: var(--bg-black-10);
+	}
+
+	// TABLES
+	.table {
+		--bs-table-color: var(--text-black);
+	}
+
+	// TABS
+	.nav {
+		--bs-nav-link-color: var(--text-secondary-focusable);
+		--bs-nav-link-hover-color: var(--text-secondary-lighter-10);
+	}
+
+	.nav-tabs {
+		--bs-nav-tabs-link-active-bg: var(--bg-white);
+		--bs-nav-tabs-link-active-color: var(--text-black);
+	}
+
+	// UTILITIES
+
+	// Opacity
+	.high-contrast {
+		.opacity-25,
+		.opacity-50,
+		.opacity-75 {
+			opacity: 1 !important;
+		}
+	}
+}

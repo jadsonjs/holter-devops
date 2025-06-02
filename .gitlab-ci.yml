@@ -1,0 +1,151 @@
+
+# image to build the project
+image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/gradle:8.12.1-jdk21
+
+# make cache of dependence used between jobs.
+cache:
+  # ensures all jobs in the same pipeline use the same cache.
+  key: "$CI_PIPELINE_ID"
+  paths:
+    - .gradle/caches
+    - .gradle/wrapper
+
+
+# global variable of jobs
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  # Specify to Docker where to create the certificates. Docker
+  # creates them automatically on boot, and creates
+  # `/certs/client` to share between the service and job
+  # container, thanks to volume mount from config.toml
+  DOCKER_TLS_CERTDIR: "/certs"
+  # name of docker image salve on registry
+  CURRENT_IMAGE_NAME: $CI_REGISTRY_IMAGE:v$CI_PIPELINE_IID
+  # name of the container when it is running
+  # DOCKER_INSTANCE_NAME: used to run 2 or more containers application name serve
+  # DOCKER_INSTANCE_NAME examples: -teste, -production, etc...
+  # DOCKER_CONTAINER_NAME examples: base-imd-teste, base-imd-producao
+  # default empty
+  DOCKER_CONTAINER_NAME: $CI_PROJECT_NAME${DOCKER_INSTANCE_NAME}
+  # name of the file with the app environment variables: base-imd.env, base-imd-test.env, etc..
+  ENV_FILE_NAME: $CI_PROJECT_NAME${DOCKER_INSTANCE_NAME}.env
+
+
+# define the stage of the imdev framework pipeline
+stages:
+  - clean
+  - build
+  - test
+  - image
+  - deploy
+
+
+# job the start the build cleaning the pass data
+clean_job:
+  stage: clean
+  tags:
+    - DTI-CI
+  cache: {} # no cache
+  script: "gradle clean"
+  except:
+    - tags
+    - schedules  # Exclui agendamentos
+
+
+# build the java files
+build_job:
+  stage: build
+  tags:
+    - DTI-CI, runner1
+  script: "gradle classes"
+  except:
+    - tags
+    - schedules  # Exclui agendamentos
+
+
+# execute the unit test
+unit_test_job:
+  stage: test
+  tags:
+    - DTI-CI
+  script: "gradle test --info"
+  except:
+    - tags
+    - schedules  # Exclui agendamentos
+
+#
+# Executa o build a imagem da aplicação para rodar dentro de um Docker
+# será gerada uma imagem de acordo com .Dockerfile e publicado no gitlab
+#
+# Para esse job executar, é necessário instalar o docker no servidor do gitlab-runner e
+# registrar o runner com " --executor shell "
+# @see https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-the-shell-executor
+#
+build_docker_image_job:
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:20.10.9
+  stage: image
+  tags:
+    - DTI-Docker
+  services:
+    - docker:20.10.9-dind
+  environment:
+    name: ${CI_COMMIT_REF_NAME}
+  script:
+    - echo " login in the docker hub for build de image"
+    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USER --password-stdin
+    - echo "docker build . -t $CURRENT_IMAGE_NAME --build-arg FRONTEND_BUILD=${FRONTEND_BUILD}"
+    - docker build . -t $CURRENT_IMAGE_NAME --build-arg FRONTEND_BUILD=${FRONTEND_BUILD}
+    - docker logout
+    - echo " login in the gitlab registry "
+    - echo " $CI_JOB_TOKEN | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin "
+    - echo $CI_JOB_TOKEN | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+    - docker push $CURRENT_IMAGE_NAME
+  only:
+    - test
+    - production
+
+
+
+
+
+#
+# Faz o deploy da aplicação no ambiente de testes,
+#
+# Faz um ssh para a maquina onde a aplicação deve executar, e sobe uma nova imagem docker lá
+#
+deploy_docker_image_job:
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/alpine:3.15.0
+  stage: deploy
+  tags:
+    - DTI-Docker # the runner was configured to execute only if the job has this tag
+  # create a .ssh directory with the private key inside.
+  # the public key should be put inside /home/.ssh of remote server.
+  # Make sure you define the variable
+  # SSH_PRIVATE_KEY within Settings > CI/CD > Variables with the content of your private key
+  before_script:
+    ## Install openssh-client
+    ## Run ssh-agent
+    ## Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
+    ## Create the SSH directory and give it the right permissions
+    - apk add openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$DEPLOY_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+  # environment are created on gitlab Operations > Environments
+  # each environment define different variables values
+  environment:
+    name: ${CI_COMMIT_REF_NAME}
+  script:
+    # login on the deployment machine
+    # download the application  docker image that is on gitlab
+    # remove the previous container
+    # upload a new container with a new application version
+    - echo "ssh to -p${DEPLOY_SERVER_PORT} ${DEPLOY_SERVER_USER}@${DEPLOY_SERVER_URL}"
+    - ssh -o StrictHostKeyChecking=no -p${DEPLOY_SERVER_PORT} ${DEPLOY_SERVER_USER}@${DEPLOY_SERVER_URL} "docker login -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN $CI_REGISTRY "
+    - ssh -o StrictHostKeyChecking=no -p${DEPLOY_SERVER_PORT} ${DEPLOY_SERVER_USER}@${DEPLOY_SERVER_URL} "docker pull $CURRENT_IMAGE_NAME "
+    - ssh -o StrictHostKeyChecking=no -p${DEPLOY_SERVER_PORT} ${DEPLOY_SERVER_USER}@${DEPLOY_SERVER_URL} "docker container rm -f $DOCKER_CONTAINER_NAME || true "
+    - ssh -o StrictHostKeyChecking=no -p${DEPLOY_SERVER_PORT} ${DEPLOY_SERVER_USER}@${DEPLOY_SERVER_URL} "docker container run -d -p ${DOCKER_INSTANCE_PORT}:8080 -v /data/holter:/data -e TZ="America/Recife" -e LANG="pt_BR.UTF-8" --restart always --env-file /data/envs/$ENV_FILE_NAME --name $DOCKER_CONTAINER_NAME $CURRENT_IMAGE_NAME"
+  only:
+    - test
+    - production

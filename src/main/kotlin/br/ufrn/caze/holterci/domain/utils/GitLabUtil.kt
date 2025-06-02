@@ -67,6 +67,19 @@ class GitLabUtil {
         return finalList
     }
 
+    fun getMRsMergedInPeriod(list: List<GitLabMergeRequestInfo>, initPeriod: LocalDateTime, endPeriod: LocalDateTime): List<GitLabMergeRequestInfo> {
+        val finalList: MutableList<GitLabMergeRequestInfo> = ArrayList()
+        for (element in list) {
+            if (element.merged_at != null) {
+                val date = dateUtil.toLocalDateTime(element.created_at)
+                if( dateUtil.isBetweenDates(date, initPeriod, endPeriod) ){
+                    finalList.add(element)
+                }
+            }
+        }
+        return finalList
+    }
+
     fun getPipeLinesInPeriod(list: List<GitLabPipelineInfo>, initPeriod: LocalDateTime, endPeriod: LocalDateTime): List<GitLabPipelineInfo> {
         val finalList : MutableList<GitLabPipelineInfo> = ArrayList()
         for (element in list) {

@@ -52,6 +52,11 @@ class RepositoriesConfiguration {
     }
 
     @Bean
+    fun mainRepositoryConfigurationRepository(jpaRepository: MainRepositoryConfigurationJPARepository) : MainRepositoryRepository {
+        return MainRepositoryImpl(jpaRepository)
+    }
+
+    @Bean
     fun schedulerRepository(jpaRepository: SchedulerJPARepository) : SchedulerRepository {
         return SchedulerRepositoryImpl(jpaRepository)
     }
@@ -85,5 +90,9 @@ class RepositoriesConfiguration {
     fun generalMetricRepository(jpaRepository: ControlMetricJPARepository) : ControlMetricRepository {
         return ControlMetricRepositoryImpl(jpaRepository)
     }
-    
+
+    @Bean
+    fun  metricSegmentRepository(jpaRepository: MetricSegmentJPARepository) : MetricSegmentRepository {
+        return MetricSegmentRepositoryImpl(jpaRepository)
+    }
 }

@@ -65,6 +65,7 @@ class LoginRestController (
                 throw EmptyResultDataAccessException(1)
 
             var dto: UserDto = userDtoConverter.toDto(user)
+            dto.password = "????????"
             dto.jwtToken = jwtManager.generateToken(user.email, netUtil.getClientIpAddress(request), netUtil.getClientUserAgent(request))
 
             return ResponseEntity(dto, HttpStatus.OK)

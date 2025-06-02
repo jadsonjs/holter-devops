@@ -37,5 +37,21 @@ class GitHubUtil {
         }
         return prsRelease
     }
+
+    fun getPRsMergedInPeriod(pullRequest: MutableList<GitHubPullRequestInfo>, initPeriod: LocalDateTime, endPeriod: LocalDateTime): List<GitHubPullRequestInfo> {
+        val prsMerged: MutableList<GitHubPullRequestInfo> = ArrayList()
+
+        for (pr in pullRequest) {
+            if (pr.merged_at != null) {
+                val mergedDate = dateUtil.toLocalDateTime(pr.merged_at)
+                if (mergedDate.isAfter(initPeriod) && mergedDate.isBefore(endPeriod) ) {
+                    prsMerged.add(pr)
+                }
+            }
+        }
+
+        return prsMerged
+    }
+
 }
 

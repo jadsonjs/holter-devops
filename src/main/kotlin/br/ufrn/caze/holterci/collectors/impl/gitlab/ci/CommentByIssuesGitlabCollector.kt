@@ -31,10 +31,8 @@ import br.com.jadson.snooper.gitlab.data.issue.GitLabIssueInfo
 import br.com.jadson.snooper.gitlab.operations.GitLabCommentsQueryExecutor
 import br.com.jadson.snooper.gitlab.operations.GitLabIssueQueryExecutor
 import br.ufrn.caze.holterci.collectors.Collector
-import br.ufrn.caze.holterci.domain.models.metric.Metric
-import br.ufrn.caze.holterci.domain.models.metric.MetricRepository
-import br.ufrn.caze.holterci.domain.models.metric.Period
-import br.ufrn.caze.holterci.domain.models.metric.Project
+import br.ufrn.caze.holterci.collectors.dtos.CollectResult
+import br.ufrn.caze.holterci.domain.models.metric.*
 import br.ufrn.caze.holterci.domain.utils.GitLabUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -52,21 +50,21 @@ class CommentByIssuesGitlabCollector
     @Autowired
     lateinit var gitLabUtils: GitLabUtil
 
-    override fun calcMetricValue(period: Period, @SuppressWarnings("unused") globalPeriod: Period, project: Project): Pair<BigDecimal, String>  {
+    override fun calcMetricValue(period: Period, @SuppressWarnings("unused") globalPeriod: Period, project: Project): CollectResult {
 
         val projectConfiguration = projectRepository.findConfigurationByIdProject(project.id!!)
 
 
         val executorIssues = GitLabIssueQueryExecutor()
-        executorIssues.setGitlabURL(projectConfiguration.mainRepositoryURL)
-        executorIssues.setGitlabToken(projectConfiguration.mainRepositoryToken)
+        executorIssues.setGitlabURL(projectConfiguration.mainRepository.url)
+        executorIssues.setGitlabToken(projectConfiguration.mainRepository.token)
         executorIssues.setDisableSslVerification(disableSslVerification)
         executorIssues.setQueryParameters(arrayOf("scope=all"))
         executorIssues.setPageSize(100)
 
         val executor = GitLabCommentsQueryExecutor()
-        executor.setGitlabURL(projectConfiguration.mainRepositoryURL)
-        executor.setGitlabToken(projectConfiguration.mainRepositoryToken)
+        executor.setGitlabURL(projectConfiguration.mainRepository.url)
+        executor.setGitlabToken(projectConfiguration.mainRepository.token)
         executor.setDisableSslVerification(disableSslVerification)
         executor.setPageSize(100)
 
@@ -96,8 +94,8 @@ class CommentByIssuesGitlabCollector
         }
 
 
-        return Pair( CommentsPerChangeGauge()
-            .calcCommentsPerChange(commentsOfAnalysis, period.init, period.end, StatisticalMeasure.MEAN).value, generateMetricInfo(period, commentsOfAnalysis, issueInPeriod) )
+        return CollectResult( CommentsPerChangeGauge()
+            .calcCommentsPerChange(commentsOfAnalysis, period.init, period.end, StatisticalMeasure.MEAN).value, generateMetricInfo(period, commentsOfAnalysis, issueInPeriod), null )
     }
 
     override fun cleanCache() {

@@ -32,6 +32,7 @@ package br.ufrn.caze.holterci.domain.services.crud
 import br.ufrn.caze.holterci.domain.exceptions.BusinessException
 import br.ufrn.caze.holterci.domain.models.metric.Project
 import br.ufrn.caze.holterci.domain.models.metric.ProjectConfiguration
+import br.ufrn.caze.holterci.domain.ports.repositories.crud.MetricReferenceValueRepository
 import br.ufrn.caze.holterci.domain.ports.repositories.crud.PeriodRepository
 import br.ufrn.caze.holterci.domain.ports.repositories.crud.ProjectRepository
 import br.ufrn.caze.holterci.domain.ports.repositories.crud.SchedulerRepository
@@ -52,7 +53,8 @@ class ProjectService
     private val schedulerRepository : SchedulerRepository,
     private val schedulerService : SchedulerService,
     private val periodRepository : PeriodRepository,
-    private val accessLogJPARepository : AccessLogJPARepository
+    private val accessLogJPARepository : AccessLogJPARepository,
+    private val metricReferenceValueRepository: MetricReferenceValueRepository,
     )
 {
 
@@ -83,7 +85,7 @@ class ProjectService
         periodRepository.deleteAllBYProject(idProject)
         projectRepository.deleteConfigurationByProject(idProject)
         accessLogJPARepository.deleteAllBYProject(idProject)
-
+        metricReferenceValueRepository.deleteAllByProject(idProject)
         projectRepository.delete(Project(idProject))
     }
 
@@ -96,8 +98,8 @@ class ProjectService
 
     @Transactional
     fun saveConfiguration(configuration: ProjectConfiguration): ProjectConfiguration {
-        if(configuration.issuesErrosLabels != null) {
-            configuration.issuesErrosLabels = configuration.issuesErrosLabels!!.replace(" ", "")
+        if(configuration.mainRepository.issuesErrosLabels != null) {
+            configuration.mainRepository.issuesErrosLabels = configuration.mainRepository.issuesErrosLabels!!.replace(" ", "")
         }
         return projectRepository.saveConfiguration(configuration)
     }

@@ -103,7 +103,7 @@ abstract class AbstractRestController{
             .registerModule(ParameterNamesModule())
             .registerModule(Jdk8Module())
             .registerModule(JavaTimeModule())
-        val headerUser = request.getHeader("logged-in-user")
+        val headerUser = request.getHeader("usuario-logado")
         return if (StringUtil().isNotEmpty(headerUser)) {
             userDtoConverter.toModel(mapper.readValue(headerUser, UserDto::class.java))
         } else {

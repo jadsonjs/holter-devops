@@ -1,0 +1,69 @@
+/**
+ * Universidade Federal do Rio Grande do Norte
+ * Instituto Metrópole Digital
+ * Diretoria de Tecnologia da Informação
+ *
+ * Arquivo de sobreposição do estilo dos componentes do Primevue
+ *
+ * @since 08/12/2022
+ */
+@use './variables-css';
+
+@layer custom.primevue {
+	// AUTOCOMPLETE
+	.p-autocomplete {
+		.p-autocomplete-input {
+			color: var(--text-black);
+			background-color: var(--bg-white);
+			border-color: var(--border-black-20);
+		}
+
+		.p-autocomplete-dropdown {
+			background-color: var(--bg-primary-focusable);
+			border-color: var(--border-primary-focusable);
+		}
+	}
+	.p-autocomplete-panel {
+		background-color: var(--bg-white);
+		box-shadow: 0px 0px 0px 1px var(--border-black-20);
+
+		.p-autocomplete-items {
+			.p-autocomplete-item {
+				color: var(--text-black-focusable);
+
+				&:not(.p-highlight):not(.p-disabled):hover,
+				&:not(.p-highlight):not(.p-disabled).p-focus {
+					background-color: var(--bg-primary-focusable);
+					color: var(--text-white);
+				}
+			}
+		}
+	}
+
+	// OVERLAY PANEL
+	.p-overlaypanel {
+		color: var(--text-black);
+		background-color: var(--bg-white);
+		border-color: var(--border-transparent);
+		box-shadow: 0px 0px 0px 1px var(--border-black-20);
+
+		.p-overlaypanel-close {
+			background-color: var(--bg-primary-focusable);
+		}
+	}
+
+	// TOAST
+	.high-contrast {
+		.p-toast {
+			opacity: 1;
+			.p-toast-message {
+				box-shadow: 0px 0px 0px 1px var(--border-black-20);
+				background: var(--bg-black);
+
+				.p-toast-message-text {
+					color: var(--text-black);
+				}
+			}
+		}
+	}
+}

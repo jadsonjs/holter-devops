@@ -34,6 +34,7 @@ enum class MetricStage (val value: Int, var description: String, var highlightCo
     CD(3,      "Continuous Development", "#28a745"),
     CM(4,      "Continuous Monitoring" , "MediumPurple"),
     CS(5,      "Continuous Security"   , "IndianRed"),
+    REPO(6,"Repository"   , "#808000"),
 
     ;
 

@@ -31,10 +31,8 @@ import br.com.jadson.snooper.gitlab.data.merge.GitLabMergeRequestInfo
 import br.com.jadson.snooper.gitlab.operations.GitLabCommentsQueryExecutor
 import br.com.jadson.snooper.gitlab.operations.GitLabMergeRequestQueryExecutor
 import br.ufrn.caze.holterci.collectors.Collector
-import br.ufrn.caze.holterci.domain.models.metric.Metric
-import br.ufrn.caze.holterci.domain.models.metric.MetricRepository
-import br.ufrn.caze.holterci.domain.models.metric.Period
-import br.ufrn.caze.holterci.domain.models.metric.Project
+import br.ufrn.caze.holterci.collectors.dtos.CollectResult
+import br.ufrn.caze.holterci.domain.models.metric.*
 import br.ufrn.caze.holterci.domain.utils.GitLabUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -52,21 +50,21 @@ class CommentByMergeRequestGitlabCollector
     @Autowired
     lateinit var gitLabUtils: GitLabUtil
 
-    override fun calcMetricValue(period: Period, @SuppressWarnings("unused") globalPeriod: Period, project: Project): Pair<BigDecimal, String>  {
+    override fun calcMetricValue(period: Period, @SuppressWarnings("unused") globalPeriod: Period, project: Project): CollectResult {
 
         val projectConfiguration = projectRepository.findConfigurationByIdProject(project.id!!)
 
 
         val executorMergs = GitLabMergeRequestQueryExecutor()
-        executorMergs.setGitlabURL(projectConfiguration.mainRepositoryURL)
-        executorMergs.setGitlabToken(projectConfiguration.mainRepositoryToken)
+        executorMergs.setGitlabURL(projectConfiguration.mainRepository.url)
+        executorMergs.setGitlabToken(projectConfiguration.mainRepository.token)
         executorMergs.setDisableSslVerification(disableSslVerification)
         executorMergs.setQueryParameters(arrayOf("state=all"))
         executorMergs.setPageSize(100)
 
         val executor = GitLabCommentsQueryExecutor()
-        executor.setGitlabURL(projectConfiguration.mainRepositoryURL)
-        executor.setGitlabToken(projectConfiguration.mainRepositoryToken)
+        executor.setGitlabURL(projectConfiguration.mainRepository.url)
+        executor.setGitlabToken(projectConfiguration.mainRepository.token)
         executor.setDisableSslVerification(disableSslVerification)
         executor.setPageSize(100)
 
@@ -95,8 +93,8 @@ class CommentByMergeRequestGitlabCollector
         }
 
 
-        return Pair( CommentsPerChangeGauge()
-            .calcCommentsPerChange(commentsOfAnalysis, period.init, period.end, StatisticalMeasure.MEAN).value, generateMetricInfo(period, commentsOfAnalysis, mergeInPeriod))
+        return CollectResult( CommentsPerChangeGauge()
+            .calcCommentsPerChange(commentsOfAnalysis, period.init, period.end, StatisticalMeasure.MEAN).value, generateMetricInfo(period, commentsOfAnalysis, mergeInPeriod), null)
     }
 
 

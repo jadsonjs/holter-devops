@@ -24,6 +24,7 @@
  */
 package br.ufrn.caze.holterci.domain.dtos.crud
 
+import br.ufrn.caze.holterci.domain.models.metric.Project
 import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.NotNull
 import java.math.BigDecimal
@@ -36,5 +37,8 @@ data class MetricReferenceValuesDto (
 
     @get:NotNull
     @get:DecimalMin(value = "0.0", inclusive = true)
-    var value : BigDecimal = BigDecimal.ZERO
+    var value : BigDecimal = BigDecimal.ZERO,
+
+    @get:NotNull
+    var project : Project
 )

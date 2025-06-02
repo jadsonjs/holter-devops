@@ -31,23 +31,59 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+/**
+ * Carrega informações do ambiente da aplicação.
+ *
+ * @author Jadson Santos - jadson.santos@ufrn.br
+ */
 @RestController
-@RequestMapping("/api/parameter")
-class ParameterRestController : AbstractRestController() {
+@RequestMapping(path = ["/api/parameter"])
+class ParameterRestController {
 
-    @Value("\${lock.no-ci-metrics}")
-    val lockNoCIMetrics : Boolean = true
+    @Value("\${application.url}")
+    var applicationUrl: String? = null
 
-    @Value("\${enable.login-page}")
-    val enableLoginPage : Boolean = false
+    @Value("\${application.name}")
+    var nomeAplicacao: String? = null
 
-    @GetMapping(value = ["/lock-no-ci-metrics"])
-    fun getLockNoCIMetrics() : ResponseEntity<Boolean> {
-        return ResponseEntity(lockNoCIMetrics, HttpStatus.OK);
-    }
+    /**
+     * Se o sistema irá habilitar o auto cadastro do usuário.
+     * Pode ser que o sistema deve ser acessível apenas por determinadas pessoas que o admin cadastre
+     * Não será permitido o usuário se cadatrar e entrar na aplicação.
+     * Por padrão permite.
+     */
+    @Value("\${application.allow.self.registration:false}")
+    var permiteAutoCadastro: Boolean = false
 
-    @GetMapping(value = ["/login-enable"])
-    fun getEnableLoginPage() : ResponseEntity<Boolean> {
-        return ResponseEntity(enableLoginPage, HttpStatus.OK);
+    @Value("\${application.public.page:true}")
+    var paginaPublica: Boolean = false
+
+    @Value("\${lock.no-ci-metrics:false}")
+    var lockNoCIMetrics: Boolean = false
+
+    @Value("\${enable.login-page:false}")
+    var enableLoginPage: Boolean = false
+
+    /**
+     * Retorna algumas variáveis de ambiente para o front-end para não precisa ficar armazendo nos 2 lados
+     *
+     * ESSE SERVIÇO É PÚBLICO, ENTÃO NÃO ADICIONE PARAMETROS SENSIVEIS, COMO SENHAS, NELE
+     *
+     * NÃO REMOVA ESSE SERVIÇO, ELE É NECESSÁRIO PARA O FRONT_END FUNCIONAR ADEQUADAMENTE
+     *
+     *
+     * @return
+     */
+    @GetMapping(path = ["/load"])
+    fun loadEnvironment(): ResponseEntity<Map<String, Any?>> {
+        val data: MutableMap<String, Any?> = HashMap()
+        data["appUrl"] = applicationUrl
+        data["appName"] = nomeAplicacao
+        data["permiteAutoCadastro"] = permiteAutoCadastro
+        data["permitePaginaPublica"] = paginaPublica
+        data["lockNoCIMetrics"] = lockNoCIMetrics
+        data["enableLoginPage"] = enableLoginPage
+
+        return ResponseEntity(data, HttpStatus.OK)
     }
 }

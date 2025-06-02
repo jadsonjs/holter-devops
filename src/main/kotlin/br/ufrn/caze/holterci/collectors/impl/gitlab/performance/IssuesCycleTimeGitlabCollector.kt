@@ -29,6 +29,7 @@ import br.com.jadson.snooper.gitlab.data.issue.GitLabIssueInfo
 import br.com.jadson.snooper.gitlab.operations.GitLabCommitQueryExecutor
 import br.com.jadson.snooper.gitlab.operations.GitLabIssueQueryExecutor
 import br.ufrn.caze.holterci.collectors.Collector
+import br.ufrn.caze.holterci.collectors.dtos.CollectResult
 import br.ufrn.caze.holterci.domain.models.metric.*
 import br.ufrn.caze.holterci.domain.utils.GitLabUtil
 import br.ufrn.caze.holterci.domain.utils.StringUtil
@@ -58,7 +59,7 @@ class IssuesCycleTimeGitlabCollector
      *
      * This metric assumes that the developer will log this information.
      */
-    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): Pair<BigDecimal, String>  {
+    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): CollectResult {
 
         val projectConfiguration = projectRepository.findConfigurationByIdProject(project.id!!)
 
@@ -111,7 +112,7 @@ class IssuesCycleTimeGitlabCollector
         }
 
         var mean = mathUtil.meanOfLongValues(cycleTimes)
-        return Pair(mean, generateMetricInfo(period, issuesClosedOfProject , commitsOfPeriod, issueCommitMap, cycleTimes ))
+        return CollectResult(mean, generateMetricInfo(period, issuesClosedOfProject , commitsOfPeriod, issueCommitMap, cycleTimes ), null)
     }
 
     override fun cleanCache() {
@@ -155,8 +156,8 @@ class IssuesCycleTimeGitlabCollector
 
 
         val commitExecutor = GitLabCommitQueryExecutor()
-        commitExecutor.setGitlabURL(projectConfiguration.mainRepositoryURL)
-        commitExecutor.setGitlabToken(projectConfiguration.mainRepositoryToken)
+        commitExecutor.setGitlabURL(projectConfiguration.mainRepository.url)
+        commitExecutor.setGitlabToken(projectConfiguration.mainRepository.token)
         commitExecutor.setDisableSslVerification(disableSslVerification)
         commitExecutor.setPageSize(100)
         commitExecutor.setQueryParameters(arrayOf("since=" + dateUtil.toIso8601(period.init), "until=" + dateUtil.toIso8601(period.end)))
@@ -172,8 +173,8 @@ class IssuesCycleTimeGitlabCollector
      */
     fun getAllIssuesClosedOfProject(projectConfiguration: ProjectConfiguration, project: Project, period: Period, globalPeriod: Period) :List<GitLabIssueInfo> {
         val issueExecutor = GitLabIssueQueryExecutor()
-        issueExecutor.setGitlabURL(projectConfiguration.mainRepositoryURL)
-        issueExecutor.setGitlabToken(projectConfiguration.mainRepositoryToken)
+        issueExecutor.setGitlabURL(projectConfiguration.mainRepository.url)
+        issueExecutor.setGitlabToken(projectConfiguration.mainRepository.token)
         issueExecutor.setDisableSslVerification(disableSslVerification)
         issueExecutor.setQueryParameters(arrayOf("scope=all", "state=closed"))
         issueExecutor.setPageSize(100)

@@ -65,6 +65,10 @@ class MetricReferenceValues {
     @Column(name = "metric_value", nullable = false)
     var value : BigDecimal = BigDecimal.ZERO
 
+    @ManyToOne
+    @JoinColumn(name = "project_id", nullable = false)
+    var project : Project = Project()
+
     constructor(){
     }
 

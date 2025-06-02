@@ -2,25 +2,25 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
 	// spring boot versions
-	id("org.springframework.boot") version "3.1.0"
-	id("io.spring.dependency-management") version "1.1.0"
+	id("org.springframework.boot") version "3.3.3"
+	id("io.spring.dependency-management") version "1.1.6"
 
-	// https://plugins.gradle.org/plugin/org.siouan.frontend-jdk11
-	id("org.siouan.frontend-jdk11") version "6.0.0"
+	// https://plugins.gradle.org/plugin/org.siouan.frontend-jdk21
+	id("org.siouan.frontend-jdk21") version "10.0.0"
 
 	// kotlin version
-	kotlin("jvm") version "1.8.21"
-	kotlin("plugin.spring") version "1.8.21"
-	kotlin("plugin.jpa") version "1.8.21"
+	kotlin("jvm") version "1.9.25"
+	kotlin("plugin.spring") version "1.9.25"
+	kotlin("plugin.jpa") version "1.9.25"
 
 	// Annotation processors (see JSR 269) are supported
 	// in Kotlin with the kapt compiler plugin.
-	kotlin("kapt") version "1.8.21"
+	kotlin("kapt") version "1.9.25"
 }
 
 group = "br.ufrn.caze"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_17
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 tasks.jar {
 	archiveBaseName.value("holter.jar")
@@ -29,12 +29,13 @@ tasks.jar {
 repositories {
 	maven("https://repo.kotlin.link")
 	mavenCentral()
-
 	// local libs inside the project
 	flatDir {
 		dirs("../libs")
 	}
 }
+
+
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
@@ -42,10 +43,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 
 	implementation("org.springframework.boot:spring-boot-starter-mail")
-	// implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 
 	implementation("org.springframework.boot:spring-boot-starter-security")
-
 
 
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -55,8 +54,8 @@ dependencies {
 	// MapStruct is a code generator that greatly simplifies the implementation
 	// of mappings between Java bean types based on a convention over configuration approach.
 	// https://mapstruct.org
-	implementation("org.mapstruct:mapstruct:1.5.3.Final")
-	kapt("org.mapstruct:mapstruct-processor:1.5.3.Final")
+	implementation("org.mapstruct:mapstruct:1.5.5.Final")
+	kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
 
 	// hibernate validation
 	implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -83,7 +82,11 @@ dependencies {
 	 */
 	implementation("org.apache.commons:commons-math3:3.6.1")
 
+	// https://mvnrepository.com/artifact/com.github.librepdf/openpdf
+	implementation("com.github.librepdf:openpdf:2.0.3")
 
+	// git libraty for java
+	implementation("org.eclipse.jgit:org.eclipse.jgit:3.3.2.201404171909-r")
 
 
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -107,7 +110,7 @@ dependencies {
 tasks.withType<KotlinCompile> {
 	kotlinOptions {
 		freeCompilerArgs = listOf("-Xjsr305=strict")
-		jvmTarget = "17"
+		jvmTarget = "21"
 	}
 }
 
@@ -127,15 +130,21 @@ tasks.withType<Test> {
 
 // https://github.com/siouan/frontend-gradle-plugin
 // https://siouan.github.io/frontend-gradle-plugin/configuration#dsl-reference
+
+// build:test or build:prod
+val frontendBuildType = project.findProperty("frontend_build") ?: "build"
+
 frontend {
 	packageJsonDirectory.set(file("${projectDir}/src/frontend"))
 	nodeInstallDirectory.set(file("${projectDir}/src/frontend/.node"))
 	nodeDistributionUrlRoot.set("https://nodejs.org/dist/")
-	nodeVersion.set("16.15.0")
-	assembleScript.set("run build")
+	// corepack error on previous Node versions
+	// https://github.com/pnpm/pnpm/issues/9029#issuecomment-2634650201
+	nodeVersion.set("23.7.0")
+	assembleScript.set("run $frontendBuildType")
 }
 
-val frontendFolder = File( "${buildDir}/resources/main/static" )
+val frontendFolder = File( "${layout.buildDirectory.get()}/resources/main/static" )
 
 /**
  * Copy vue file to inside the jar
@@ -146,12 +155,12 @@ tasks.register<Copy>("copyVueFiles") {
 
 			println("-------------------------------------------------------")
 			println("copying frontend from: ${projectDir}/src/frontend/dist")
-			println("copying frontend to: ${buildDir}/resources/main/static")
+			println("copying frontend to: ${layout.buildDirectory.get()}/resources/main/static")
 			if( ! frontendFolder.exists() ) {
-				mkdir("${buildDir}/resources/main/static")
+				mkdir("${layout.buildDirectory.get()}/resources/main/static")
 			}
 			from ("${projectDir}/src/frontend/dist")
-			into ("${buildDir}/resources/main/static")
+			into ("${layout.buildDirectory.get()}/resources/main/static")
 			println("-------------------------------------------------------")
 	//	}
 	// }

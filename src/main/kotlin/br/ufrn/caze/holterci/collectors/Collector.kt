@@ -22,15 +22,17 @@
  * THE SOFTWARE.
  *
  *
- * holter-devops
+ * holter-ci
  * br.ufrn.caze.publicano
  * Collector
  * 21/05/21
  */
 package br.ufrn.caze.holterci.collectors
 
+import br.ufrn.caze.holterci.collectors.dtos.CollectResult
 import br.ufrn.caze.holterci.domain.models.metric.*
 import br.ufrn.caze.holterci.domain.ports.repositories.crud.MetricHistoryRepository
+import br.ufrn.caze.holterci.domain.ports.repositories.crud.MetricSegmentRepository
 import br.ufrn.caze.holterci.domain.ports.repositories.crud.PeriodRepository
 import br.ufrn.caze.holterci.domain.ports.repositories.crud.ProjectRepository
 import br.ufrn.caze.holterci.domain.ports.repositories.crud.SchedulerRepository
@@ -74,6 +76,9 @@ abstract class Collector
 
     @Autowired
     lateinit var metricHistoryRepository : MetricHistoryRepository
+
+    @Autowired
+    lateinit var metricSegmentRepository: MetricSegmentRepository
 
     @Autowired
     lateinit var periodRepository : PeriodRepository
@@ -125,24 +130,17 @@ abstract class Collector
 
             println("[" + indexPeriodSaved + "] collecting period from: " + period.init + " to: " + period.end )
 
-            var periodSaved = periodRepository.findPeriod(period.init, period.end, project.id!!)
+            var collectResult = calcMetricValue(period, globalPeriod, project)
 
-            var data = calcMetricValue(period, globalPeriod, project)
-
-            // the period of the metric was collected
-            var metricHistory = MetricHistory()
-            if (periodSaved != null) {
-                metricHistory.period = periodSaved
-            }else{
-                metricHistory.period = Period( period.init, period.end, project, indexPeriodSaved ) // create a new period of analysis for this project
+            if (collectResult.isSingle()) {
+                val metricHistory = getMetricHistory(period, indexPeriodSaved, project, collectResult)
+                metricHistoryRepository.save(metricHistory)
+            } else {
+                for (result in collectResult.values!!) {
+                    val metricHistory = getMetricHistory(period, indexPeriodSaved, project, result)
+                    metricHistoryRepository.save(metricHistory)
+                }
             }
-
-            metricHistory.metric     = this.metric
-            metricHistory.value      = data.first
-            metricHistory.metricInfo = data.second
-
-            metricHistoryRepository.save(metricHistory)
-
 
             indexPeriodSaved++
         }
@@ -153,10 +151,41 @@ abstract class Collector
 
     }
 
+    private fun getMetricHistory(period: Period, indexPeriodSaved: Int, project: Project, result: CollectResult): MetricHistory {
+
+        var periodSaved = periodRepository.findPeriod(period.init, period.end, project.id!!)
+
+        // the period of the metric was collected
+        var metricHistory = MetricHistory()
+        if (periodSaved != null) {
+            metricHistory.period = periodSaved
+        } else {
+            metricHistory.period = Period(
+                period.init,
+                period.end,
+                project,
+                indexPeriodSaved
+            ) // create a new period of analysis for this project
+        }
+        metricHistory.metric = this.metric
+        metricHistory.value = result.value!!
+        metricHistory.metricInfo = result.description!!
+
+        var metricSegment = result.segment
+
+        if (metricSegment != null) {
+            var entityMetricSegment = metricSegmentRepository.findByIdentifier(metricSegment.identifier)
+
+            metricHistory.metricSegment = entityMetricSegment ?: metricSegmentRepository.save(metricSegment)
+        }
+
+        return metricHistory
+    }
+
     /**
      * This method should be overridden to calc spefic metric
      */
-    abstract fun calcMetricValue(period: Period, globalPeriod: Period, project: Project):  Pair<BigDecimal, String>
+    abstract fun calcMetricValue(period: Period, globalPeriod: Period, project: Project):  CollectResult
 
     /**
      * Clean the cache

@@ -27,10 +27,8 @@ package br.ufrn.caze.holterci.collectors.impl.gitlab.ci
 import br.com.jadson.snooper.gitlab.data.commit.GitLabCommitInfo
 import br.com.jadson.snooper.gitlab.operations.GitLabCommitQueryExecutor
 import br.ufrn.caze.holterci.collectors.Collector
-import br.ufrn.caze.holterci.domain.models.metric.Metric
-import br.ufrn.caze.holterci.domain.models.metric.MetricRepository
-import br.ufrn.caze.holterci.domain.models.metric.Period
-import br.ufrn.caze.holterci.domain.models.metric.Project
+import br.ufrn.caze.holterci.collectors.dtos.CollectResult
+import br.ufrn.caze.holterci.domain.models.metric.*
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -41,13 +39,13 @@ import java.util.*
 class CommitPerDayGitlabCollector
     : Collector(UUID.fromString("0af18a6d-85a2-4b35-8cee-8181248a1684"), Metric.COMMIT_PER_DAY, "Commit Activity Per Day at Gitlab", MetricRepository.GITLAB){
 
-    override fun calcMetricValue(period: Period, @SuppressWarnings("unused") globalPeriod: Period, project: Project): Pair<BigDecimal, String>  {
+    override fun calcMetricValue(period: Period, @SuppressWarnings("unused") globalPeriod: Period, project: Project): CollectResult {
 
         val projectConfiguration = projectRepository.findConfigurationByIdProject(project.id!!)
 
         val executor = GitLabCommitQueryExecutor()
-        executor.setGitlabURL(projectConfiguration.mainRepositoryURL)
-        executor.setGitlabToken(projectConfiguration.mainRepositoryToken)
+        executor.setGitlabURL(projectConfiguration.mainRepository.url)
+        executor.setGitlabToken(projectConfiguration.mainRepository.token)
         executor.setDisableSslVerification(disableSslVerification)
         executor.setQueryParameters(arrayOf("since=" + dateUtil.toIso8601(period.init), "until=" + dateUtil.toIso8601(period.end)))
         executor.setPageSize(100)
@@ -85,7 +83,7 @@ class CommitPerDayGitlabCollector
 
         // here not work median, because we can have a lot of day with zero commits, that generate commitPerDay = 0 and is not thrue
         var meanCommitsPerWeekDay = mathUtil.meanOfLongValues(commitsPerDayList.toList() as List<Long>)
-        return Pair(meanCommitsPerWeekDay, generateMetricInfo(period, commitsOfPeriod, qtdTotalDays))
+        return CollectResult(meanCommitsPerWeekDay, generateMetricInfo(period, commitsOfPeriod, qtdTotalDays), null)
     }
 
     override fun cleanCache() {

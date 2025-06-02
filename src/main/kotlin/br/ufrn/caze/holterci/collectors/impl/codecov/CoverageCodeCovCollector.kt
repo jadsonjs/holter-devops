@@ -4,10 +4,8 @@ import br.com.jadson.snooper.codecov.data.CodeCovCommit
 import br.com.jadson.snooper.codecov.operations.AbstractCodeCovQueryExecutor
 import br.com.jadson.snooper.codecov.operations.CodeCovCommitsQueryExecutor
 import br.ufrn.caze.holterci.collectors.Collector
-import br.ufrn.caze.holterci.domain.models.metric.Metric
-import br.ufrn.caze.holterci.domain.models.metric.MetricRepository
-import br.ufrn.caze.holterci.domain.models.metric.Period
-import br.ufrn.caze.holterci.domain.models.metric.Project
+import br.ufrn.caze.holterci.collectors.dtos.CollectResult
+import br.ufrn.caze.holterci.domain.models.metric.*
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
 import java.time.format.DateTimeFormatter
@@ -25,7 +23,7 @@ class CoverageCodeCovCollector
 
 
 
-    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): Pair<BigDecimal, String> {
+    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project):  CollectResult {
         val executor = CodeCovCommitsQueryExecutor()
         // executor.setQueryParameters("from=" + dateUtil.toString(period.init) + "&to=" + dateUtil.toString(period.end))
         // executor.setLimit(250)
@@ -42,7 +40,7 @@ class CoverageCodeCovCollector
                 listCoverage.add(BigDecimal(c.totals.c))
         }
 
-        return Pair(mathUtil.medianOfValues(listCoverage), generateMetricInfo(period, commitsInPeriod))
+        return CollectResult(mathUtil.medianOfValues(listCoverage), generateMetricInfo(period, commitsInPeriod), null)
     }
 
     override fun cleanCache() {

@@ -34,12 +34,13 @@ import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 /**
  * Convert data to string and string to date
  * Jadson Santos - jadsonjs@gmail.com
  */
-@Component
+@Component("HolterDateConverter")
 @Named("DateConverter")
 class DateConverter {
 
@@ -50,12 +51,22 @@ class DateConverter {
         return null;
     }
 
+    /**
+     * Converts to LocalDateTime a String that is formatted either in the "yyyy-MM-ddTHH:mm:ssZ" format
+     * or the "yyyy-MM-dd" format.
+     */
     @Named("toLocalDate")
     fun toLocalDateTime( date : String? ): LocalDateTime? {
-        if(date!= null && ! date.isEmpty()) {
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            var ld = LocalDate.parse(date, formatter)
-            return LocalDateTime.of(ld, LocalDateTime.now().toLocalTime())
+        if(!date.isNullOrEmpty()) {
+            return try {
+                val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+                val ld = LocalDate.parse(date, formatter)
+                LocalDateTime.of(ld, LocalDateTime.now().toLocalTime())
+            } catch (e: DateTimeParseException) {
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                val ld = LocalDate.parse(date, formatter)
+                LocalDateTime.of(ld, LocalDateTime.now().toLocalTime())
+            }
         }
         return null;
     }

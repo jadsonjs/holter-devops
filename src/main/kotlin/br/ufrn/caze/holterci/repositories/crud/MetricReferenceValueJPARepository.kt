@@ -26,14 +26,23 @@ package br.ufrn.caze.holterci.repositories.crud
 
 import br.ufrn.caze.holterci.domain.models.metric.Metric
 import br.ufrn.caze.holterci.domain.models.metric.MetricReferenceValues
+import br.ufrn.caze.holterci.domain.models.metric.Project
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 
 interface MetricReferenceValueJPARepository : JpaRepository<MetricReferenceValues, Long> {
 
-    @Query("SELECT COUNT(*) FROM MetricReferenceValues rv WHERE rv.metric= ?1 ")
-    fun countReferenceValue(m: Metric): Long
+    @Query("SELECT COUNT(*) FROM MetricReferenceValues rv WHERE rv.metric= ?1 AND rv.project = ?2")
+    fun countReferenceValue(m: Metric, p: Project): Long
 
-    @Query("SELECT COUNT(*) FROM MetricReferenceValues rv WHERE rv.metric= ?1 AND rv.id <> ?2  ")
-    fun countReferenceValue(m: Metric, id: Long?): Long
+    @Query("SELECT COUNT(*) FROM MetricReferenceValues rv WHERE rv.metric= ?1 AND rv.id <> ?2 AND rv.project = ?3")
+    fun countReferenceValue(m: Metric, id: Long?, p: Project): Long
+
+    @Query("SELECT rv FROM MetricReferenceValues rv WHERE rv.project.id = ?1")
+    fun findAllByProject(projectId: Long?): List<MetricReferenceValues>
+
+    @Modifying
+    @Query("DELETE FROM MetricReferenceValues rv WHERE rv.project.id = ?1")
+    fun deleteAllByProject(idProject: Long?)
 }

@@ -55,6 +55,14 @@ class CIMetricReferenceRestController  // construtor injections of kotlin
         return ResponseEntity( metricReferenceDtoConverter.toDtoList(MetricReferenceValueRepository.findAll() ), HttpStatus.OK)
     }
 
+    /**
+     * Return all measure references for a project
+     */
+    @GetMapping("/project/{projectId}")
+    fun getAllByProjectId(@PathVariable projectId: Long) : ResponseEntity<List<MetricReferenceValuesDto>> {
+        return ResponseEntity( metricReferenceDtoConverter.toDtoList(MetricReferenceValueRepository.findAllByProject(projectId) ), HttpStatus.OK)
+    }
+
 
     /**
      * Get a specific measure reference for edit
@@ -66,7 +74,7 @@ class CIMetricReferenceRestController  // construtor injections of kotlin
 
 
     /**
-     * Save a new project
+     * Save a new measure reference
      */
     @PostMapping("/save")
     fun save(@Valid @RequestBody m: MetricReferenceValuesDto) : ResponseEntity<MetricReferenceValuesDto> {
@@ -74,11 +82,20 @@ class CIMetricReferenceRestController  // construtor injections of kotlin
     }
 
     /**
-     * Delete a project
+     * Delete a measure reference
      */
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long) : ResponseEntity<MessageDto> {
         metricReferenceService.delete(id)
         return ResponseEntity( MessageDto("Reference Removed with Success!") , HttpStatus.OK)
+    }
+
+    /**
+     * Copy measure references from one project to another
+     */
+    @PostMapping("/copy/{sourceProjectId}/{targetProjectId}")
+    fun copyMetricReferences(@PathVariable sourceProjectId : Long, @PathVariable targetProjectId : Long): ResponseEntity<MessageDto> {
+        metricReferenceService.copy(sourceProjectId, targetProjectId)
+        return ResponseEntity(MessageDto("Reference values copied successfully!"), HttpStatus.OK)
     }
 }

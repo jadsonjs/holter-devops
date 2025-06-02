@@ -32,10 +32,8 @@ package br.ufrn.caze.holterci.collectors.impl.travis;
 import br.com.jadson.snooper.travisci.data.builds.TravisBuildsInfo
 import br.com.jadson.snooper.travisci.operations.TravisCIBuildsQueryExecutor
 import br.ufrn.caze.holterci.collectors.Collector
-import br.ufrn.caze.holterci.domain.models.metric.Metric
-import br.ufrn.caze.holterci.domain.models.metric.MetricRepository
-import br.ufrn.caze.holterci.domain.models.metric.Period
-import br.ufrn.caze.holterci.domain.models.metric.Project
+import br.ufrn.caze.holterci.collectors.dtos.CollectResult
+import br.ufrn.caze.holterci.domain.models.metric.*
 import br.ufrn.caze.holterci.domain.utils.TravisCIUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -59,7 +57,7 @@ class TimeToFixBrokenBuildTravisCICollector
     var buildsCache = mutableListOf<TravisBuildsInfo>()
 
 
-    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): Pair<BigDecimal, String> {
+    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): CollectResult {
 
         val executor = TravisCIBuildsQueryExecutor()
 
@@ -69,7 +67,15 @@ class TimeToFixBrokenBuildTravisCICollector
             buildsCache = allBuilds
         }
 
-        return Pair( metricCalc.calcTimeFixBrokenBuilds( travisCIUtil.getBuildsOfPeriod(buildsCache, period.init, period.end)), "")
+        return CollectResult(
+            metricCalc.calcTimeFixBrokenBuilds(
+                travisCIUtil.getBuildsOfPeriod(
+                    buildsCache,
+                    period.init,
+                    period.end
+                )
+            ), "", null
+        )
 
     }
 

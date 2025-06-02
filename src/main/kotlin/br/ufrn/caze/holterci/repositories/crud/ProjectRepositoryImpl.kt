@@ -89,6 +89,7 @@ class ProjectRepositoryImpl
         return jpaRepository.findByActive(true)
     }
 
+
     override fun countProjectSameNameAndOrganization(project: Project): Long {
         return jpaRepository.countProjectSameNameAndOrganization(  (if (project.id != null) project.id else 0L) , project.name.trim(), project.organization.trim())
     }
@@ -101,6 +102,7 @@ class ProjectRepositoryImpl
             " SELECT p  " +
                     " FROM ProjectConfiguration p " +
                     " INNER JOIN FETCH p.project proj " +
+                    " INNER JOIN FETCH p.mainRepository m " +
                     " WHERE  proj.id = :idProject ")
             .setParameter("idProject", projectId)
 
@@ -113,6 +115,10 @@ class ProjectRepositoryImpl
 
 
     override fun saveConfiguration(configuration: ProjectConfiguration): ProjectConfiguration {
+        if (configuration.mainRepository.id == null) {
+            entityManager.persist(configuration.mainRepository) // Salva primeiro
+        }
+
         if(configuration.id == null)
             entityManager.persist(configuration)
         else
@@ -125,6 +131,9 @@ class ProjectRepositoryImpl
         jpaRepository.deleteConfigurationByProject(projectId)
     }
 
+    override fun deleteConfigurationByMainRepository(mainRepositoryId: Long) {
+        jpaRepository.deleteConfigurationByMainRepository(mainRepositoryId)
+    }
 
 
 }

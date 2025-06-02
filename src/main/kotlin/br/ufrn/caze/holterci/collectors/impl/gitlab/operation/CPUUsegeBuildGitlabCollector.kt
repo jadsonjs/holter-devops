@@ -28,10 +28,8 @@ import br.com.jadson.gaugeci.model.BuildOfAnalysis
 import br.com.jadson.snooper.gitlab.data.pipeline.GitLabPipelineInfo
 import br.com.jadson.snooper.gitlab.operations.GitlabPipelineQueryExecutor
 import br.ufrn.caze.holterci.collectors.Collector
-import br.ufrn.caze.holterci.domain.models.metric.Metric
-import br.ufrn.caze.holterci.domain.models.metric.MetricRepository
-import br.ufrn.caze.holterci.domain.models.metric.Period
-import br.ufrn.caze.holterci.domain.models.metric.Project
+import br.ufrn.caze.holterci.collectors.dtos.CollectResult
+import br.ufrn.caze.holterci.domain.models.metric.*
 import br.ufrn.caze.holterci.domain.utils.GitLabUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -49,13 +47,13 @@ class CPUUsegeBuildGitlabCollector
     @Autowired
     lateinit var gitLabUtils: GitLabUtil
 
-    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): Pair<BigDecimal, String>  {
+    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): CollectResult {
 
         val projectConfiguration = projectRepository.findConfigurationByIdProject(project.id!!)
 
         val executor = GitlabPipelineQueryExecutor()
-        executor.setGitlabURL(projectConfiguration.mainRepositoryURL)
-        executor.setGitlabToken(projectConfiguration.mainRepositoryToken)
+        executor.setGitlabURL(projectConfiguration.mainRepository.url)
+        executor.setGitlabToken(projectConfiguration.mainRepository.token)
         executor.setDisableSslVerification(disableSslVerification)
         executor.setPageSize(100)
 
@@ -81,8 +79,7 @@ class CPUUsegeBuildGitlabCollector
             totalCPUTime = totalCPUTime.add(BigDecimal(durationInSeconds))
         }
 
-        return Pair(dateUtil.secondsToHours(totalCPUTime), generateMetricInfo(period, pipesOfPeriod, totalCPUTime))
-
+        return CollectResult(dateUtil.secondsToHours(totalCPUTime), generateMetricInfo(period, pipesOfPeriod, totalCPUTime), null)
     }
 
     override fun cleanCache() {

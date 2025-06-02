@@ -1,0 +1,56 @@
+// Primary
+$primary-h: 215;
+$primary-s: 50%;
+$primary-l: 42%;
+$primary-hsl: hsl($primary-h, $primary-s, $primary-l);
+
+// Secondary
+$secondary-h: 215;
+$secondary-s: 50%;
+$secondary-l: 42%;
+$secondary-hsl: hsl($secondary-h, $secondary-s, $secondary-l);
+
+// Limegreen
+$high-contrast-interactive-h: 120;
+$high-contrast-interactive-s: 61%;
+$high-contrast-interactive-l: 50%;
+$high-contrast-interactive-hsl: hsl($high-contrast-interactive-h, $high-contrast-interactive-s, $high-contrast-interactive-l);
+
+$colors: (
+	'black': #000,
+	'black-10': rgba(0, 0, 0, 0.1),
+	'black-20': rgba(0, 0, 0, 0.2),
+	'black-30': rgba(0, 0, 0, 0.3),
+	'black-40': rgba(0, 0, 0, 0.4),
+	'black-50': rgba(0, 0, 0, 0.5),
+	'black-60': rgba(0, 0, 0, 0.6),
+	'black-70': rgba(0, 0, 0, 0.7),
+	'black-80': rgba(0, 0, 0, 0.8),
+	'black-90': rgba(0, 0, 0, 0.9),
+	'white': #fff,
+	'white-10': rgba(255, 255, 255, 0.1),
+	'white-20': rgba(255, 255, 255, 0.2),
+	'white-30': rgba(255, 255, 255, 0.3),
+	'white-40': rgba(255, 255, 255, 0.4),
+	'white-50': rgba(255, 255, 255, 0.5),
+	'white-60': rgba(255, 255, 255, 0.6),
+	'white-70': rgba(255, 255, 255, 0.7),
+	'white-80': rgba(255, 255, 255, 0.8),
+	'white-90': rgba(255, 255, 255, 0.9),
+	'transparent': transparent,
+
+	// Alto contraste
+	'high-contrast-background-1': #252525,
+	'high-contrast-background-2': #082757,
+	'high-contrast-foreground-1': #ffffff,
+	'high-contrast-foreground-2': #e7c608,
+	'high-contrast-interactive': $high-contrast-interactive-hsl,
+
+	// Personalizado
+	'primary': $primary-hsl,
+	'primary-lighter-10': hsl($primary-h, $primary-s, $primary-l + 10),
+	'primary-lighter-20': hsl($primary-h, $primary-s, $primary-l + 25),
+	'secondary': $secondary-hsl,
+	'secondary-lighter-10': hsl($secondary-h, $secondary-s, $secondary-l + 10),
+	'secondary-lighter-20': hsl($secondary-h, $secondary-s, $secondary-l + 25),
+);

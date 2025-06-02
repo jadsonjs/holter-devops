@@ -25,7 +25,6 @@
 package br.ufrn.caze.holterci.domain.models.metric
 
 import jakarta.persistence.*
-import jakarta.validation.constraints.NotEmpty
 
 /**
  * Configuration of the project necessary to collect some metric metrics
@@ -40,36 +39,9 @@ class ProjectConfiguration {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id : Long? = null;
 
-    /**
-     * Repository API URl. used to collect the data.
-     * No necessary if the project is in the GitHub, bacause the GitHub has just one URL.
-     * But is necessary, for example, if the project are in local gitlab repository
-     */
-    @NotEmpty
-    @Column(name = "main_repository_url", nullable = false)
-    var mainRepositoryURL: String = ""
-
-    /**
-     * Security token used by the most of the repository to give access to API.
-     */
-    @NotEmpty
-    @Column(name = "main_repository_token", nullable = false)
-    var mainRepositoryToken: String = ""
-
-    /**
-     * The name of the branch that contains the production code.
-     * By default, the branch "master" is the projection branch
-     */
-    @NotEmpty
-    @Column(name = "prodution_branch", nullable = false)
-    var produtionBranch: String = ""
-
-    /**
-     * List Labels separated by comma that indicate in the project that an issue is an error issue
-     * Normally if this way we identify an error issue, by the label.
-     */
-    @Column(name = "issues_erros_labels", nullable = true)
-    var issuesErrosLabels: String? = ""
+    @ManyToOne
+    @JoinColumn(name = "main_repository_id", nullable = false)
+    var mainRepository: MainRepository = MainRepository()
 
     /**
      * Some project use an assistant repository to coverage, like CodeCov or Jenkins.  This field keep this information

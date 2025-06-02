@@ -61,4 +61,8 @@ interface ProjectJPARepository : JpaRepository<Project, Long> {
     @Query(" DELETE FROM ProjectConfiguration c WHERE c.project.id = ?1")
     fun deleteConfigurationByProject(projectId: Long)
 
+    @Modifying
+    @Query(" DELETE FROM ProjectConfiguration c WHERE c.mainRepository.id = ?1")
+    fun deleteConfigurationByMainRepository(mainRepositoryId: Long)
+
 }

@@ -1,0 +1,35 @@
+// Layers
+@use '../layers';
+
+@use '../bootstrap';
+@use '../variables-css';
+@use '../variables-classes';
+
+// fragmentos
+@use './components/navbar';
+@use './components/footer';
+
+html {
+	height: 100%;
+	min-height: 100%;
+
+	body {
+		display: flex;
+		flex-direction: column;
+		height: auto;
+		min-height: 100%;
+
+		#app {
+			flex-grow: 1;
+			display: grid;
+			color: var(--text-black);
+			background-color: var(--bg-white);
+			grid-template-columns: 100%;
+			grid-template-rows: min-content min-content auto min-content;
+		}
+	}
+}
+
+a:not(.btn) {
+	color: var(--text-primary-focusable);
+}

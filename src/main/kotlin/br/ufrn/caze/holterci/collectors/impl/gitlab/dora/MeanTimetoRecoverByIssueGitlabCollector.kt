@@ -29,10 +29,8 @@ import br.com.jadson.snooper.gitlab.data.tag.GitLabTagInfo
 import br.com.jadson.snooper.gitlab.operations.GitLabIssueQueryExecutor
 import br.com.jadson.snooper.gitlab.operations.GitLabTagQueryExecutor
 import br.ufrn.caze.holterci.collectors.Collector
-import br.ufrn.caze.holterci.domain.models.metric.Metric
-import br.ufrn.caze.holterci.domain.models.metric.MetricRepository
-import br.ufrn.caze.holterci.domain.models.metric.Period
-import br.ufrn.caze.holterci.domain.models.metric.Project
+import br.ufrn.caze.holterci.collectors.dtos.CollectResult
+import br.ufrn.caze.holterci.domain.models.metric.*
 import br.ufrn.caze.holterci.domain.utils.GitLabUtil
 import br.ufrn.caze.holterci.domain.utils.LabelsUtil
 import org.springframework.beans.factory.annotation.Autowired
@@ -74,7 +72,7 @@ class MeanTimetoRecoverByIssueGitlabCollector
     /** cache all issues of a project, because is very slow this query*/
     var issuesCache = mutableListOf<GitLabIssueInfo>()
 
-    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): Pair<BigDecimal, String>  {
+    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): CollectResult {
 
         val projectConfiguration = projectRepository.findConfigurationByIdProject(project.id!!)
 
@@ -83,10 +81,10 @@ class MeanTimetoRecoverByIssueGitlabCollector
         ///////////////////////  Get Issues of error  ////////////////////////
 
         val executor = GitLabIssueQueryExecutor()
-        executor.setGitlabURL(projectConfiguration.mainRepositoryURL)
-        executor.setGitlabToken(projectConfiguration.mainRepositoryToken)
+        executor.setGitlabURL(projectConfiguration.mainRepository.url)
+        executor.setGitlabToken(projectConfiguration.mainRepository.token)
         executor.setDisableSslVerification(disableSslVerification)
-        executor.setQueryParameters(arrayOf("scope=all", "state=closed", "labels="+projectConfiguration.issuesErrosLabels))
+        executor.setQueryParameters(arrayOf("scope=all", "state=closed", "labels="+projectConfiguration.mainRepository.issuesErrosLabels))
         executor.setPageSize(100)
 
 
@@ -98,15 +96,15 @@ class MeanTimetoRecoverByIssueGitlabCollector
         var issuesInPeriod = gitLabUtils.getIssueClosedInPeriod(issuesCache, period.init, period.end)
         var errorIssuesInPeriod = mutableListOf<GitLabIssueInfo>()
         for (issue in issuesInPeriod){
-            if(isErrorIssue(issue, projectConfiguration.issuesErrosLabels))
+            if(isErrorIssue(issue, projectConfiguration.mainRepository.issuesErrosLabels))
                 errorIssuesInPeriod.add(issue)
         }
 
         ///////////////////////  Get Versions (tags) of period ////////////////////////
 
         val executorTags = GitLabTagQueryExecutor()
-        executorTags.setGitlabURL(projectConfiguration.mainRepositoryURL)
-        executorTags.setGitlabToken(projectConfiguration.mainRepositoryToken)
+        executorTags.setGitlabURL(projectConfiguration.mainRepository.url)
+        executorTags.setGitlabToken(projectConfiguration.mainRepository.token)
         executorTags.setDisableSslVerification(disableSslVerification)
 
 
@@ -132,9 +130,9 @@ class MeanTimetoRecoverByIssueGitlabCollector
         }
 
         if(tagsOfPeriod.size > 0) { // there are releases in this period, divide by the number of releases
-            return Pair(mathUtil.meanOfValues(timeCloseErrors).divide(tagsOfPeriod.size.toBigDecimal()), "")
+            return CollectResult(mathUtil.meanOfValues(timeCloseErrors).divide(tagsOfPeriod.size.toBigDecimal()), "", null)
         }else{
-            return Pair(mathUtil.meanOfValues(timeCloseErrors), generateMetricInfo(period, errorIssuesInPeriod, tagsOfPeriod ) )
+            return CollectResult(mathUtil.meanOfValues(timeCloseErrors), generateMetricInfo(period, errorIssuesInPeriod, tagsOfPeriod ), null )
         }
 
     }

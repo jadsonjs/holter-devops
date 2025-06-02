@@ -31,6 +31,7 @@ package br.ufrn.caze.holterci.domain.services.miner
 
 import br.ufrn.caze.holterci.collectors.CollectorFactory
 import br.ufrn.caze.holterci.domain.exceptions.BusinessException
+import br.ufrn.caze.holterci.domain.models.division.MetricStage
 import br.ufrn.caze.holterci.domain.models.metric.Period
 import br.ufrn.caze.holterci.domain.models.metric.Project
 import br.ufrn.caze.holterci.domain.models.metric.Scheduler

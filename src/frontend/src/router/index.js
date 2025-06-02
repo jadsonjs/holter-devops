@@ -1,83 +1,312 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-
-import store from '@/store';
-
-Vue.use(VueRouter)
-
-let router = new VueRouter({
-    mode: 'history',
-    
-    base: process.env.VUE_APP_PUBLIC_PATH,
-    
-    routes: [
-    
-      { path: '/',                              name: 'Home',                                      component: () => import('@/components/Home.vue') }, 
-      { path: '/login',                         name: 'Login',                                     component: () => import('@/Login.vue') }, 
-
-      { path: '/users/list',                    name: 'ListUser',                                  component: () => import('@/components/crud/UsersList.vue') }, 
-      { path: '/users/form',                    name: 'FormUser',                                  component: () => import('@/components/crud/UsersForm.vue'),                                        meta: { requiresSecurity : true, roles: ['ADMIN'] } },
-      { path: '/users/form/:id',                name: 'EditUser',                                  component: () => import('@/components/crud/UsersForm.vue'),                                        meta: { requiresSecurity : true, roles: ['ADMIN'] } },
-      
-      { path: '/project/list',                  name: 'ListProject',                               component: () => import('@/components/crud/ProjectList.vue') }, 
-      { path: '/project/form',                  name: 'FormProject',                               component: () => import('@/components/crud/ProjectForm.vue'),                                      meta: { requiresSecurity : true, roles: ['ADMIN'] } },
-      { path: '/project/form/:id',              name: 'EditProject',                               component: () => import('@/components/crud/ProjectForm.vue'),                                      meta: { requiresSecurity : true, roles: ['ADMIN'] } },
-      { path: '/project/findByName/:name',      name: 'GetProjectByName',                          component: () => import('@/components/crud/SchedulerForm.vue') },
-
-      { path: '/metric/list',                   name: 'ListMetric',                                component: () => import('@/components/crud/MetricList.vue') },
-
-      { path: '/configuration/form/:id',        name: 'ConfigurationForm',                         component: () => import('@/components/crud/ProjectConfigurationForm.vue'),                         meta: { requiresSecurity : true, roles: ['ADMIN'] } }, 
-
-
-      { path: '/scheduler/view/:idProjeto',     name: 'ViewScheduler',                             component: () => import('@/components/crud/SchedulerView.vue') },
-      { path: '/scheduler/form/:idProjeto',     name: 'FormScheduler',                             component: () => import('@/components/crud/SchedulerForm.vue') ,                                   meta: { requiresSecurity : true, roles: ['ADMIN', 'MANAGER'] }},
-      { path: '/scheduler/edit/:id',            name: 'EditScheduler',                             component: () => import('@/components/crud/SchedulerForm.vue') ,                                   meta: { requiresSecurity : true, roles: ['ADMIN', 'MANAGER'] }},
-
-      { path: '/ci/references/list',            name: 'ReferencesList',                            component: () => import('@/components/crud/ReferenceValuesList.vue') }, 
-      { path: '/ci/references/form',            name: 'ReferencesForm',                            component: () => import('@/components/crud/ReferenceValuesForm.vue'),                              meta: { requiresSecurity : true, roles: ['ADMIN', 'MANAGER'] } }, 
-
-      { path: '/control/list',                  name: 'ControlMetricList',                         component: () => import('@/components/crud/ControlMetricList.vue') }, 
-      { path: '/control/form/:id',              name: 'ControlMetricForm',                         component: () => import('@/components/crud/ControlMetricForm.vue') }, 
-
-
-      { path: '/measures/list',                 name: 'PreMeasureSelect',                          component: () => import('@/components/miner/ConfigureMeasuresMiner.vue') }, 
-      { path: '/measures/miner/:id',            name: 'MeasureCollect',                            component: () => import('@/components/miner/ExecuteMeasuresMiner.vue') ,                           meta: { requiresSecurity : true, roles: ['ADMIN', 'MANAGER'] } }, 
-      
-
-      { path: '/metrics/evolution/list',                     name: 'MetricsEvolutionList',         component: () => import('@/components/dashboard/evolution/MetricsEvolutionList.vue') }, 
-      { path: '/metrics/evolution/dashboard/:owner/:name',   name: 'MetricsEvolutionDashBoard',    component: () => import('@/components/dashboard/evolution/MetricsEvolutionDashBoard.vue') },  
-      
-
-    ]
-})
-
-
 /**
- * Router guards with security rules for the application
+ * Universidade Federal do Rio Grande do Norte
+ * Instituto Metrópole Digital
+ * Diretoria de Tecnologia da Informação
+ *
+ * Aquivo de configuracao das rotas.
+ * 
+ * @author Jadson Santos - jadson.santos@ufrn.br
+ * @since 14/08/2024
  */
-router.beforeEach(function (to, from, next) {
-  if ( ! to.meta.requiresSecurity ) {
-    next();
-  } else { // requiresSecurity = true
-    if(! store.state.login.authenticated ){  
-      alert('User not authenticated, please log in')
-      window.location.replace(process.env.VUE_APP_PUBLIC_PATH+'login')
-    }else{ // if authenticated check roles
-      if (to.meta.roles && to.meta.roles.length > 0) {
-        // router.app refers to the root Vue instance associated with the router
-        if (router.app.hasRole(to.meta.roles)) {
-          next();
-        } else {
-          alert('user has not permission: '+to.meta.roles)
-          window.location.replace(process.env.VUE_APP_PUBLIC_PATH)
-        }    
-      }else{ // anyone can access
-        next();
-      }
-    }
-  }
-  
+import { createRouter, createWebHistory } from 'vue-router';
+
+import { useLoginStore } from "@/stores/login"
+const loginStore = useLoginStore()
+
+import { useParametrosStore } from "@/stores/parametros"
+const parametrosStore = useParametrosStore()
+
+
+// mensagens
+import { useMessage } from '@/utils/message';
+const { message } = useMessage();
+
+import InternalLayout from '@/layout/InternalLayout.vue';
+import PublicLayout from '@/layout/public/PublicLayout.vue';
+import NaoEncontrado from "@/views/base/auth/NaoEncontrado.vue"
+import AcessoNegado from "@/views/base/auth/AcessoNegado.vue"
+
+
+import { hasRoles } from "@/utils/permissoes"
+
+
+const router = createRouter({
+	history: createWebHistory(import.meta.env.VITE_APP_PUBLIC_PATH),
+	routes: [
+		{
+			path: '/',
+			component: InternalLayout,
+			// internal pages of app
+			children: [
+
+				// pagina principal, colocar o conteudo desejado nessa tela
+				{
+					path: '/home', name: 'home', component: () => import('@/views/base/Home.vue')
+				},
+
+				// paginas da administração do sistema
+
+				{ path: '/acesso-negado', name: 'acessoNegado', component: AcessoNegado },
+
+
+				{
+					path: '/admin/usuarios/list',
+					name: 'listUsers',
+					component: () => import('@/views/use-case/crud/UsersList.vue'),
+					meta: {
+						papeis: ["ADMIN"],                                                       // permissoes para acessar a rota
+						searchQuery: { titulo: "Users List", keywords: "List User Lista Usuário" }, // dados para pesquisa
+					}
+				},
+
+				{
+					path: '/admin/usuarios/form/',
+					name: 'formUser',
+					component: () => import('@/views/use-case/crud/UsersForm.vue')
+				},
+
+				{
+					path: '/admin/usuarios/form/:id',
+					name: 'editUser',
+					component: () => import('@/views/use-case/crud/UsersForm.vue')
+				},
+
+
+				{
+					path: "/notificacoes",
+					name: "notificacoes",
+					component: () => import("@/views/base/Notificacoes.vue"),
+					meta: {
+						searchQuery: { titulo: "Notificações", keywords: "notificação Notificações" }
+					},
+				},
+
+
+
+
+				{
+					path: '/metric/list',
+					name: 'listMetrics',
+					component: () => import('@/views/use-case/crud/MetricsList.vue')
+				},
+				{
+					path: '/project/list',
+					name: 'listProjects',
+					component: () => import('@/views/use-case/crud/ProjectList.vue')
+				},
+				{
+					path: '/project/form',
+					name: 'formProject',
+					meta: { requiresSecurity: true, papeis: ["ADMIN"]},
+					component: () => import('@/views/use-case/crud/ProjectForm.vue')
+				},
+				{
+					path: '/project/form/:id',
+					name: 'editProject',
+					meta: { requiresSecurity: true, papeis: ["ADMIN"]},
+					component: () => import('@/views/use-case/crud/ProjectForm.vue')
+				},
+				{
+					path: '/main-repository/form',
+					name: 'formMainRepository',
+					meta: { requiresSecurity : true, papeis: ['ADMIN']},
+					component: () => import('@/views/use-case/crud/MainRepositoryForm.vue')
+				},
+				{
+					path: '/main-repository/form/:id',
+					name: 'editMainRepository',
+					meta: { requiresSecurity : true, papeis: ['ADMIN']},
+					component: () => import('@/views/use-case/crud/MainRepositoryForm.vue')
+				},
+				{
+					path: '/main-repository/list',
+					name: 'listMainRepository',
+					meta: { requiresSecurity : true, papeis: ['ADMIN']},
+					component: () => import('@/views/use-case/crud/MainRepositoryList.vue')
+				},
+				{
+					path: '/configuration/form/:id',
+					name: 'formConfiguration',
+					meta: { requiresSecurity : true, papeis: ['ADMIN']},
+					component: () => import('@/views/use-case/crud/ProjectConfigurationForm.vue')
+				},
+				{
+					path: '/scheduler/view/:idProjeto',
+					name: 'viewScheduler',
+					component: () => import('@/views/use-case/crud/SchedulerView.vue')
+				},
+				{
+					path: '/scheduler/form/:idProjeto',
+					name: 'formScheduler',
+					meta: { requiresSecurity : true, papeis: ['ADMIN', 'MANAGER']},
+					component: () => import('@/views/use-case/crud/SchedulerForm.vue')
+				},
+				{
+					path: '/scheduler/edit/:id',
+					name: 'editScheduler',
+					meta: { requiresSecurity : true, papeis: ['ADMIN', 'MANAGER']},
+					component: () => import('@/views/use-case/crud/SchedulerForm.vue')
+				},
+				{
+					path: '/ci/references/list/:projectId',
+					name: 'listReferences',
+					component: () => import('@/views/use-case/crud/ReferenceValuesList.vue')
+				},
+				{
+					path: '/ci/references/form/project/:projectId',
+					name: 'formReference',
+					meta: { requiresSecurity : true, papeis: ['ADMIN', 'MANAGER'] },
+					component: () => import('@/views/use-case/crud/ReferenceValuesForm.vue')
+				},
+				{
+					path: '/ci/references/form/:id',
+					name: 'editReference',
+					meta: { requiresSecurity : true, papeis: ['ADMIN', 'MANAGER'] },
+					component: () => import('@/views/use-case/crud/ReferenceValuesForm.vue')
+				},
+				// list the projects 
+				{
+					path: '/collect/listprojects',
+					name: 'selectProjectsToCollect',
+					component: () => import('@/views/use-case/miner/ConfigureManualMiner.vue')
+				},
+				// execute the miner manually
+				{
+					path: '/collect/mine/:id',
+					name: 'executeManualMiner',
+					meta: { requiresSecurity : true, papeis: ['ADMIN', 'MANAGER'] },
+					component: () => import('@/views/use-case/miner/ExecuteManualMiner.vue')
+				},
+				{
+					path: '/metrics/evolution/list',
+					name: 'listMetricsEvolution',
+					component: () => import('@/views/use-case/dashboard/evolution/MetricsEvolutionList.vue')
+				},
+				{
+					path: '/metrics/evolution/dashboard/:owner/:name',
+					name: 'dashboardMetricsEvolution',
+					component: () => import('@/views/use-case/dashboard/evolution/MetricsEvolutionDashboard.vue')
+				},
+				{
+					path: '/report/list',
+					name: 'selectProjectForReport',
+					component: () => import('@/views/use-case/security/ConfigureProjectsReport.vue')
+				},
+				
+				// uses case repository list
+				{
+					path: '/repository/evolution/list',
+					name: 'repositoryEvolutionDashboard',
+					props: { context: 'repository' },
+					component: () => import('@/views/use-case/dashboard/evolution/MetricsEvolutionList.vue')
+				},
+				{
+					path: '/repository/evolution/dashboard/:owner/:name',
+					name: 'repositoryDashboardMetricsEvolution',
+					component: () => import('@/views/use-case/dashboard/evolution/RepositoryMetricsEvolutionDashboard.vue')
+				},
+				/**
+				 * ***********************************************************
+				 * 
+				 * FIM DAS ROTAS DOS CASOS DE USO DA APLICAÇÃO
+				 *
+				 * Caso não encontre uma rota, ir para página 404
+				 * 
+				 * ***********************************************************
+				 */
+				{ path: "/:pathMatch(.*)", component: NaoEncontrado },
+			]
+		}, // end internal layout pages
+
+
+
+		// public pages in vue
+		{
+			path: '/',
+			component: PublicLayout,
+			// internal pages of app
+			children: [
+				{
+					path: '/login',
+					name: 'login',
+					component: () => import('@/views/base/auth/Login.vue')
+				},
+/* 				{
+					path:'/code',
+					name: 'login2fa',
+					component: () => import('@/views/base/auth/Login2fa.vue')
+				} */
+			]
+		},
+
+
+	]
 });
 
+import { redirectToLogin } from "@/utils/authentication"
 
-export default router;      
+/**
+ * NAVIGATION GUARDS
+ * Seguranca: verifica se o usuário tem permissao de acessar a rota
+ */
+router.beforeEach(async (to) => {
+
+	/**
+	 * Se o login é obrigatório e o usuário não está autenticado nem se autenticando (2 fatores), redireciona para a tela de login
+	 */
+	if (parametrosStore.enableLoginPage && ! loginStore.autenticado && (to.name !== "login" && to.name !== "login2fa")) {
+		redirectToLogin()
+		return false
+	}
+
+	/**
+	 * Se o usuário já está autenticado e tenta acessar a autenticação 2FA, redireciona para a home.
+	 * Se o usuário tenta acessar a autenticação 2FA sem ter iniciado o login, ou após ter sido deslogado, redireciona para a tela de login.
+	 */
+/* 	if (to.name == "login2fa") {
+		if (loginStore.autenticado == true) {
+			return { name: "home" }
+		}
+	} */
+
+	/*
+	 * se o usuario solicitou a troca da senha, deve ir para essa tela ate trocar a senha
+	 */
+	if (loginStore.usuarioLogado.senhaEsquecida) {
+		if (to.name !== "formSenhaUsuario") {
+			message.warn("Alterar senha", "É necessário realizar a troca da senha para o seu usuário")
+			return { name: "formSenhaUsuario" }
+		}
+	}
+
+
+	/**
+	 * Se o campo meta da rota exige segurança e o usuário não está logado, redireciona para o login.
+	 */
+	if (to.meta.requiresSecurity ) {
+		if(! loginStore.autenticado ){  
+			alert('User not authenticated, please log in')
+			return { name: "login" }
+		}
+	}
+
+	/**
+	 * Se o campo meta da rota tem papeis, verifica se o usuario possui esse papeis para acessar a tela
+	 * Se não mostra tela de acesso negado ao sistema.
+	 */
+	if (to.meta?.papeis?.length > 0) {
+		if (!hasRoles(to.meta.papeis)) {
+			return { name: "acessoNegado" }
+		}
+	}
+
+	/**
+	 * não existe "/", se por acaso o usuario digiar isso, vai para o componente home
+	 */
+	if ( to.path === "/") {
+		return { name: "home" }
+	}
+
+})
+
+export default router;

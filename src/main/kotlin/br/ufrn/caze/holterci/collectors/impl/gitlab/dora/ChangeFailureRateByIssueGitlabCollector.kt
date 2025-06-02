@@ -29,10 +29,8 @@ import br.com.jadson.snooper.gitlab.data.tag.GitLabTagInfo
 import br.com.jadson.snooper.gitlab.operations.GitLabIssueQueryExecutor
 import br.com.jadson.snooper.gitlab.operations.GitLabTagQueryExecutor
 import br.ufrn.caze.holterci.collectors.Collector
-import br.ufrn.caze.holterci.domain.models.metric.Metric
-import br.ufrn.caze.holterci.domain.models.metric.MetricRepository
-import br.ufrn.caze.holterci.domain.models.metric.Period
-import br.ufrn.caze.holterci.domain.models.metric.Project
+import br.ufrn.caze.holterci.collectors.dtos.CollectResult
+import br.ufrn.caze.holterci.domain.models.metric.*
 import br.ufrn.caze.holterci.domain.utils.GitLabUtil
 import br.ufrn.caze.holterci.domain.utils.LabelsUtil
 import org.springframework.beans.factory.annotation.Autowired
@@ -82,7 +80,7 @@ class ChangeFailureRateByIssueGitlabCollector
     /** cache all issues of a project, because is very slow this query*/
     var issuesCache = mutableListOf<GitLabIssueInfo>()
 
-    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): Pair<BigDecimal, String>  {
+    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): CollectResult {
         val projectConfiguration = projectRepository.findConfigurationByIdProject(project.id!!)
 
 
@@ -90,10 +88,10 @@ class ChangeFailureRateByIssueGitlabCollector
         ///////////////////////  Get Issues of error  ////////////////////////
 
         val executor = GitLabIssueQueryExecutor()
-        executor.setGitlabURL(projectConfiguration.mainRepositoryURL)
-        executor.setGitlabToken(projectConfiguration.mainRepositoryToken)
+        executor.setGitlabURL(projectConfiguration.mainRepository.url)
+        executor.setGitlabToken(projectConfiguration.mainRepository.token)
         executor.setDisableSslVerification(disableSslVerification)
-        executor.setQueryParameters(arrayOf("scope=all", "state=closed", "labels="+projectConfiguration.issuesErrosLabels))
+        executor.setQueryParameters(arrayOf("scope=all", "state=closed", "labels="+projectConfiguration.mainRepository.issuesErrosLabels))
         executor.setPageSize(100)
 
 
@@ -105,15 +103,15 @@ class ChangeFailureRateByIssueGitlabCollector
         var issuesInPeriod = gitLabUtils.getIssueClosedInPeriod(issuesCache, period.init, period.end)
         var errorIssuesInPeriod = mutableListOf<GitLabIssueInfo>()
         for (issue in issuesInPeriod){
-            if(isErrorIssue(issue, projectConfiguration.issuesErrosLabels))
+            if(isErrorIssue(issue, projectConfiguration.mainRepository.issuesErrosLabels))
                 errorIssuesInPeriod.add(issue)
         }
 
         ///////////////////////  Get Versions (tags) of period ////////////////////////
 
         val executorTags = GitLabTagQueryExecutor()
-        executorTags.setGitlabURL(projectConfiguration.mainRepositoryURL)
-        executorTags.setGitlabToken(projectConfiguration.mainRepositoryToken)
+        executorTags.setGitlabURL(projectConfiguration.mainRepository.url)
+        executorTags.setGitlabToken(projectConfiguration.mainRepository.token)
         executorTags.setDisableSslVerification(disableSslVerification)
 
 
@@ -135,13 +133,12 @@ class ChangeFailureRateByIssueGitlabCollector
         ////////////////////// Calc Metric /////////////////////////
 
         if(errorIssuesInPeriod.size == 0)
-            return Pair(BigDecimal.ZERO, "")
+            return CollectResult(BigDecimal.ZERO, "", null)
 
         if(tagsOfPeriod.size > 0) { // there are releases in this period, divide by the number of releases
-            return Pair( ( errorIssuesInPeriod.size.toBigDecimal().divide(issuesInPeriod.size.toBigDecimal()).divide(tagsOfPeriod.size.toBigDecimal()) ).multiply(BigDecimal(100)), generateMetricInfo(period, errorIssuesInPeriod, tagsOfPeriod) )
+            return CollectResult( ( errorIssuesInPeriod.size.toBigDecimal().divide(issuesInPeriod.size.toBigDecimal()).divide(tagsOfPeriod.size.toBigDecimal()) ).multiply(BigDecimal(100)), generateMetricInfo(period, errorIssuesInPeriod, tagsOfPeriod), null )
         }else{
-            return Pair( ( errorIssuesInPeriod.size.toBigDecimal().divide(issuesInPeriod.size.toBigDecimal())).multiply(BigDecimal(100)), generateMetricInfo(period, errorIssuesInPeriod, tagsOfPeriod) )
-        }
+            return CollectResult( ( errorIssuesInPeriod.size.toBigDecimal().divide(issuesInPeriod.size.toBigDecimal())).multiply(BigDecimal(100)), generateMetricInfo(period, errorIssuesInPeriod, tagsOfPeriod), null )        }
 
     }
 

@@ -1,0 +1,167 @@
+// Mixins
+@mixin fadeInAnimation() {
+	animation: fadeIn 0.2s ease-out both;
+}
+
+@mixin fadeInUpAnimation() {
+	animation: fadeInUp 0.2s ease-out both;
+}
+
+@mixin fadeInDownAnimation() {
+	animation: fadeInDown 0.2s ease-out both;
+}
+
+@mixin fadeInLeftAnimation() {
+	animation: fadeInLeft 0.2s ease-out both;
+}
+
+@mixin slideUpAnimation() {
+	animation: slideUp 0.2s ease-out both;
+}
+
+// Classes
+.fade-in {
+	@include fadeInAnimation();
+}
+.fade-in-up {
+	@include fadeInUpAnimation();
+}
+.fade-in-down {
+	@include fadeInDownAnimation();
+}
+.fade-in-left {
+	@include fadeInLeftAnimation();
+}
+.slide-up {
+	@include slideUpAnimation();
+}
+.show-in-scale {
+	animation: show-in-scale 0.2s both;
+}
+.show-in-fade {
+	animation: show-in-fade 0.2s both;
+}
+.show-in-slide {
+	animation: show-in-slide 0.4s cubic-bezier(0, 0.65, 0.47, 0.96) both;
+}
+.show-in-slide-sm {
+	animation: show-in-slide-sm 0.25s both; /* translateX com menor deslocamento */
+}
+
+// Tempo de delay entre os elementos na sequência do "--animation-order"
+@for $i from 1 through 6 {
+	.v-delay-#{$i} {
+		animation-delay: calc(var(--animation-order) * #{$i} * 25ms);
+	}
+}
+
+// Keyframes
+@media (prefers-reduced-motion: no-preference) {
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(16px);
+		}
+
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes fadeInDown {
+		from {
+			opacity: 0;
+			transform: translateY(-16px);
+		}
+
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes fadeInLeft {
+		from {
+			opacity: 0;
+			transform: translateX(-16px);
+		}
+
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	@keyframes slideUp {
+		from {
+			transform: translateY(100%);
+		}
+
+		to {
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes show-in-scale {
+		from {
+			transform: scale(0.5);
+		}
+		to {
+			transform: scale(1);
+		}
+	}
+
+	@keyframes show-in-fade {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	@keyframes show-in-slide {
+		from {
+			transform: translateX(12rem);
+		}
+		to {
+			transform: translateX(0);
+		}
+	}
+
+	@keyframes show-in-slide-sm {
+		from {
+			transform: translateX(1rem);
+		}
+		to {
+			transform: translateX(0);
+		}
+	}
+
+	@keyframes showHomeBlob {
+		0% {
+			background-size: 0;
+			background-position: right -10% bottom 50%;
+		}
+
+		60% {
+			background-size: 76%;
+			background-position: right -60% bottom 100%;
+		}
+
+		100% {
+			background-size: 80%;
+			background-position: right -80% bottom 100%;
+		}
+	}
+}

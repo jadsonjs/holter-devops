@@ -1,0 +1,6 @@
+@use 'sass:meta';
+
+@layer vendor.bootstrap {
+	@include meta.load-css('bootstrap/dist/css/bootstrap.css');
+	@include meta.load-css('bootstrap-vue-next/dist/bootstrap-vue-next.css');
+}

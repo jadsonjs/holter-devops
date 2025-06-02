@@ -27,10 +27,8 @@ package br.ufrn.caze.holterci.collectors.impl.sonar
 import br.com.jadson.snooper.sonarcloud.data.history.SonarHistoryEntry
 import br.com.jadson.snooper.sonarcloud.operations.SonarMetricHistoryQueryExecutor
 import br.ufrn.caze.holterci.collectors.Collector
-import br.ufrn.caze.holterci.domain.models.metric.Metric
-import br.ufrn.caze.holterci.domain.models.metric.MetricRepository
-import br.ufrn.caze.holterci.domain.models.metric.Period
-import br.ufrn.caze.holterci.domain.models.metric.Project
+import br.ufrn.caze.holterci.collectors.dtos.CollectResult
+import br.ufrn.caze.holterci.domain.models.metric.*
 import br.ufrn.caze.holterci.domain.utils.StringUtil
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
@@ -46,7 +44,7 @@ import java.util.*
 class CoverageSonarCollector
     : Collector(UUID.fromString("a91338f1-f2b3-4d7e-b2db-4614999ba999"), Metric.COVERAGE, "Coverage on Sonar", MetricRepository.SONAR){
 
-    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): Pair<BigDecimal, String>  {
+    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): CollectResult {
 
         val projectConfiguration = projectRepository.findConfigurationByIdProject(project.id!!)
 
@@ -61,7 +59,7 @@ class CoverageSonarCollector
             else
                 projectConfiguration.secondaryRepositoryName
 
-        // in sonar the project key is  ''br.ufrn.xxxxx:xxxx-xxx''
+        // in sonar the project key is  ''br.ufrn.imd:base-imd''
         val historyEntries : List<SonarHistoryEntry> = executor.getProjectMetricHistory(sonarProjectFullName, "coverage", period.init, period.end)
 
 
@@ -70,7 +68,7 @@ class CoverageSonarCollector
             listCoverage.add(BigDecimal(c.value))
         }
 
-        return Pair(mathUtil.meanOfValues(listCoverage), generateMetricInfo(period, listCoverage))
+        return CollectResult(mathUtil.meanOfValues(listCoverage), generateMetricInfo(period, listCoverage), null)
     }
 
     override fun cleanCache() {

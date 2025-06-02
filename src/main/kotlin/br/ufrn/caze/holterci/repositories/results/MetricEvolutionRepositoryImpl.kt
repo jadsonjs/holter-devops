@@ -37,10 +37,11 @@ class MetricEvolutionRepositoryImpl : MetricEvolutionRepository {
 
     override fun findMetricEvolution(init: LocalDateTime?, end: LocalDateTime?, metric: Metric?, projectId: Long): MutableList<Array<Any>> {
 
-        var hql = StringBuilder(" SELECT new Period(per.init, per.end, per.index), mHistory.value, mHistory.metric, mHistory.metricInfo " +
+        var hql = StringBuilder(" SELECT new Period(per.init, per.end, per.index), mHistory.value, mHistory.metric, mHistory.metricInfo, mHistory.metricSegment " +
                 " FROM MetricHistory mHistory " +
                 " INNER JOIN mHistory.period per " +
                 " INNER JOIN per.project pro " +
+                " LEFT JOIN mHistory.metricSegment " +
                 " WHERE pro.id = :idProject ")
 
         if(metric != null)

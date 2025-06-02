@@ -3,7 +3,7 @@
  * Instituto Metrópole Digital
  * Diretoria de Tecnologia da Informação
  *
- * holter-devops
+ * holter-ci
  * NetUtilTest
  * @since 19/12/2023
  */

@@ -27,10 +27,8 @@ package br.ufrn.caze.holterci.collectors.impl.gitlab.dora
 import br.com.jadson.snooper.gitlab.data.tag.GitLabTagInfo
 import br.com.jadson.snooper.gitlab.operations.GitLabTagQueryExecutor
 import br.ufrn.caze.holterci.collectors.Collector
-import br.ufrn.caze.holterci.domain.models.metric.Metric
-import br.ufrn.caze.holterci.domain.models.metric.MetricRepository
-import br.ufrn.caze.holterci.domain.models.metric.Period
-import br.ufrn.caze.holterci.domain.models.metric.Project
+import br.ufrn.caze.holterci.collectors.dtos.CollectResult
+import br.ufrn.caze.holterci.domain.models.metric.*
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -60,13 +58,13 @@ class DeploymentFrequencyByTagGitlabCollector
      * For the Gitlab, projects that do not create releases, we will consider the DeployFrequency the Frequency between tags of the project.
      * Using the published_at date
      */
-    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): Pair<BigDecimal, String>  {
+    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): CollectResult {
 
         val projectConfiguration = projectRepository.findConfigurationByIdProject(project.id!!)
 
         val executor = GitLabTagQueryExecutor()
-        executor.setGitlabURL(projectConfiguration.mainRepositoryURL)
-        executor.setGitlabToken(projectConfiguration.mainRepositoryToken)
+        executor.setGitlabURL(projectConfiguration.mainRepository.url)
+        executor.setGitlabToken(projectConfiguration.mainRepository.token)
         executor.setDisableSslVerification(disableSslVerification)
 
         /**
@@ -113,7 +111,7 @@ class DeploymentFrequencyByTagGitlabCollector
 
 
         var meanTagsInterval = mathUtil.meanOfLongValues(releasesPerDayList.toList() as List<Long>)
-        return Pair( meanTagsInterval, generateMetricInfo(period, tagsOfPeriod, qtdTotalDays) )
+        return CollectResult( meanTagsInterval, generateMetricInfo(period, tagsOfPeriod, qtdTotalDays), null )
     }
 
     override fun cleanCache() {

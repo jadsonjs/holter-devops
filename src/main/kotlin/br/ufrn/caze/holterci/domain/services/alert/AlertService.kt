@@ -88,7 +88,7 @@ class AlertService (
         val alertEmailList: List<String> = userJPARepository.findUsersEmailsSendAlert(project.id!!)
 
         println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-        println(emailUtil.sendMail(project, periodExecution, underReferenceMetrics, alertEmailList, appAdress))
+        println(emailUtil.sendDevOpsMetrcsAlertMail(project, periodExecution, underReferenceMetrics, alertEmailList, appAdress))
         println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
     }

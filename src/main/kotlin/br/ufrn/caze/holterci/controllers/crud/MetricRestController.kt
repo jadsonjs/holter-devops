@@ -71,19 +71,20 @@ class MetricRestController : AbstractRestController() {
         return ResponseEntity(metrics, HttpStatus.OK)
     }
 
-    /**
-     * Return a list of metrics that have reference values
-     */
-    @GetMapping("/references")
-    fun getAllMetrics() : ResponseEntity<List<MetricDto>> {
-        val metrics = ArrayList<MetricDto>()
 
-        Metric.getAll().forEach{
-            metrics.add(Metric.toDto(it))
-        }
-
-        return ResponseEntity(metrics, HttpStatus.OK)
-    }
+//    /**
+//     * Return a list of metrics that have reference values ????
+//     */
+//    @GetMapping("/references")
+//    fun getAllMetrics() : ResponseEntity<List<MetricDto>> {
+//        val metrics = ArrayList<MetricDto>()
+//
+//        Metric.getAll().forEach{
+//            metrics.add(Metric.toDto(it))
+//        }
+//
+//        return ResponseEntity(metrics, HttpStatus.OK)
+//    }
 
 
 }

@@ -27,10 +27,8 @@ package br.ufrn.caze.holterci.collectors.impl.gitlab.performance
 import br.com.jadson.snooper.gitlab.data.issue.GitLabIssueInfo
 import br.com.jadson.snooper.gitlab.operations.GitLabIssueQueryExecutor
 import br.ufrn.caze.holterci.collectors.Collector
-import br.ufrn.caze.holterci.domain.models.metric.Metric
-import br.ufrn.caze.holterci.domain.models.metric.MetricRepository
-import br.ufrn.caze.holterci.domain.models.metric.Period
-import br.ufrn.caze.holterci.domain.models.metric.Project
+import br.ufrn.caze.holterci.collectors.dtos.CollectResult
+import br.ufrn.caze.holterci.domain.models.metric.*
 import br.ufrn.caze.holterci.domain.utils.GitLabUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -51,13 +49,13 @@ class IssuesLeadTimeGitlabCollector
     /**
      * GET ALL ISSUES CLOSED ASSOCIATED AND CALC the time spend to closed it.
      */
-    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): Pair<BigDecimal, String>  {
+    override fun calcMetricValue(period: Period, globalPeriod: Period, project: Project): CollectResult {
 
         val projectConfiguration = projectRepository.findConfigurationByIdProject(project.id!!)
 
         val executor = GitLabIssueQueryExecutor()
-        executor.setGitlabURL(projectConfiguration.mainRepositoryURL)
-        executor.setGitlabToken(projectConfiguration.mainRepositoryToken)
+        executor.setGitlabURL(projectConfiguration.mainRepository.url)
+        executor.setGitlabToken(projectConfiguration.mainRepository.token)
         executor.setDisableSslVerification(disableSslVerification)
         executor.setQueryParameters(arrayOf("scope=all", "state=closed"))
         executor.setPageSize(100)
@@ -82,8 +80,7 @@ class IssuesLeadTimeGitlabCollector
 
 
         val mean = mathUtil.meanOfLongValues(issuesLeadTime)
-        return Pair(mean, generateMetricInfo(period, issuesOfPeriod, issuesLeadTime ))
-
+        return CollectResult(mean, generateMetricInfo(period, issuesOfPeriod, issuesLeadTime ), null)
     }
 
     override fun cleanCache() {

@@ -1,0 +1,12 @@
+// Porque a biblioteca primevue declara a camada primeiro que os nossos CSS compilados,
+// na oportunidade que esse arquivo for compilado primeiro,
+// declarar 'primevue' como menor prioridade antes das outras layers.
+@layer primevue;
+
+@layer vendor {
+	@layer bootstrap, primevue;
+}
+
+@layer custom {
+	@layer bootstrap, primevue;
+}

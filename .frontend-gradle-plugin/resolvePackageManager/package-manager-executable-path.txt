@@ -1,0 +1,1 @@
+/Users/jadson/Desenvolvimento/git/holter-devops/src/frontend/.node/bin/pnpm

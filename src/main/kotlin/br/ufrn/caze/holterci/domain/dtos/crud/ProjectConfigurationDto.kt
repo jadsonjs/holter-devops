@@ -25,20 +25,12 @@
 package br.ufrn.caze.holterci.domain.dtos.crud
 
 import br.ufrn.caze.holterci.domain.models.metric.Project
-import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 
 data class ProjectConfigurationDto (
     var id : Long? = null,
 
-    @get:NotBlank
-    var mainRepositoryURL: String = "",
-    @get:NotBlank
-    var mainRepositoryToken: String = "",
-    @get:NotBlank
-    var produtionBranch: String,
-    @get:NotBlank
-    var issuesErrosLabels: String? = "",
+    val mainRepository: MainRepositoryDto,
 
     var secondaryRepositoryURL: String? = null,
     var secondaryRepositoryOrganization: String? = null,

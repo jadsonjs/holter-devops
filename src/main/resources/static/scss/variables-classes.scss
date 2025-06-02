@@ -1,0 +1,80 @@
+@use 'variables';
+
+// Overrides bootstrap classes
+@layer vendor.bootstrap {
+	@layer custom {
+		@each $key, $color in variables.$colors {
+			/* backgrounds */
+			.bg-#{$key} {
+				background-color: $color !important;
+			}
+			.bg-#{$key}-focusable {
+				background-color: $color !important;
+			}
+
+			/* borders */
+			.border-#{$key} {
+				border-color: $color !important;
+			}
+			.border-#{$key}-focusable {
+				border-color: $color !important;
+			}
+
+			/* texts */
+			.text-#{$key} {
+				color: $color !important;
+			}
+			.text-#{$key}-focusable {
+				color: $color !important;
+			}
+
+			/* High contrast mode versions */
+			.high-contrast {
+				/* backgrounds */
+				&.hc-color-scheme-1 {
+					.bg-#{$key} {
+						background-color: #{map-get(variables.$colors, 'high-contrast-background-1')} !important;
+					}
+				}
+				&.hc-color-scheme-2 {
+					.bg-#{$key} {
+						background-color: #{map-get(variables.$colors, 'high-contrast-background-2')} !important;
+					}
+				}
+				.bg-#{$key}-focusable {
+					background-color: #{map-get(variables.$colors, 'high-contrast-interactive')} !important;
+				}
+
+				/* borders */
+				&.hc-color-scheme-1 {
+					.border-#{$key} {
+						border-color: #{map-get(variables.$colors, 'high-contrast-foreground-1')} !important;
+					}
+				}
+				&.hc-color-scheme-2 {
+					.border-#{$key} {
+						border-color: #{map-get(variables.$colors, 'high-contrast-foreground-2')} !important;
+					}
+				}
+				.border-#{$key}-focusable {
+					border-color: #{map-get(variables.$colors, 'high-contrast-interactive')} !important;
+				}
+
+				/* texts */
+				&.hc-color-scheme-1 {
+					.text-#{$key} {
+						color: #{map-get(variables.$colors, 'high-contrast-foreground-1')} !important;
+					}
+				}
+				&.hc-color-scheme-2 {
+					.text-#{$key} {
+						color: #{map-get(variables.$colors, 'high-contrast-foreground-2')} !important;
+					}
+				}
+				.text-#{$key}-focusable {
+					color: #{map-get(variables.$colors, 'high-contrast-interactive')} !important;
+				}
+			}
+		}
+	}
+}

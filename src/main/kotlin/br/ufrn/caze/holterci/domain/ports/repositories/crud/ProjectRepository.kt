@@ -78,5 +78,7 @@ interface ProjectRepository {
 
     fun deleteConfigurationByProject(projectId: Long)
 
+    fun deleteConfigurationByMainRepository(mainRepositoryId: Long)
+
 
 }
